@@ -1,0 +1,366 @@
+{% extends "admin_panel/base.html" %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 ">Dashboard</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>15</h3>
+                        <p>Total Users</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>5</h3>
+                        <p>Total Tickets</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>3</h3>
+                        <p>Total Vechicles</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{total_drivers}}</h3>
+                        <p>Total Drivers</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <a href="{% url 'admin_drivers' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-header border-bottom bg-dark">
+                        <h5 class="card-title font-weight-bold text-white">Driver Join Trend</h5>
+                         <div class="card-tools">
+                            <label class="switch-toggle mb-0">
+                                <input type="checkbox" id="chartToggle">
+                                <span class="slider-toggle text-white">
+                                    <span class="label-2d">2D</span>
+                                    <span class="label-3d">3D</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if years and counts %}
+                            <canvas id="chart2D"></canvas>
+                            <canvas id="chart3D" style="display: none;"></canvas>
+                        {% else %}
+                            <p class="text-muted">Driver Join Trend data not available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-header border-bottom bg-dark">
+                        <h5 class="card-title text-white">Driver Vehicle Ownership</h5>
+                        <div class="card-tools">
+                            
+                            <label class="switch-toggle mb-0">
+                                <input type="checkbox" id="ownershipToggle">
+                                <span class="slider-toggle text-white">
+                                    <span class="label-2d">2D</span>
+                                    <span class="label-3d">3D</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <canvas id="ownershipChart2D" width="400" height="300"></canvas>
+                        <canvas id="ownershipChart3D" width="400" height="300" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+</section>
+
+
+{% endblock content %}
+
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+<script>
+    {% if years and counts %}
+    const years = {{ years|safe }};
+    const counts = {{ counts|safe }};
+
+    const colorPalette = [
+        '#f94144', '#f3722c', '#f8961e', '#f9844a',
+        '#f9c74f', '#90be6d', '#43aa8b', '#577590',
+        '#277da1', '#1d3557', '#a8dadc', '#457b9d'
+    ];
+
+    const chart2D = new Chart(document.getElementById('chart2D').getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Drivers Joined (2D)',
+                data: counts,
+                backgroundColor: colorPalette.slice(0, years.length),
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Driver Join Trend (2D)',
+                    font: { size: 16 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed} drivers`;
+                        }
+                    }
+                },
+                legend: { display: true, position: 'bottom' }
+            }
+        }
+    });
+
+    const chart3D = new Chart(document.getElementById('chart3D').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Drivers Joined (3D Style)',
+                data: counts,
+                backgroundColor: colorPalette.slice(0, years.length),
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '40%',
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Driver Join Trend (3D Style)',
+                    font: { size: 16 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.parsed} drivers`;
+                        }
+                    }
+                },
+                legend: { display: true, position: 'bottom' }
+            }
+        }
+    });
+
+    document.getElementById('chartToggle').addEventListener('change', function () {
+        document.getElementById('chart2D').style.display = this.checked ? 'none' : 'block';
+        document.getElementById('chart3D').style.display = this.checked ? 'block' : 'none';
+    });
+    {% endif %}
+</script>
+<script>
+    const ownershipYears = {{ ownership_chart.years|safe }};
+    const ownData = {{ ownership_chart.own|safe }};
+    const companyData = {{ ownership_chart.company|safe }};
+    
+    // 2D Line Chart
+    const ownershipChart2D = new Chart(document.getElementById('ownershipChart2D').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ownershipYears,
+            datasets: [
+                {
+                    label: 'Own Vehicle',
+                    data: ownData,
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Company Vehicle',
+                    data: companyData,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Driver Vehicle Ownership (2D Line)',
+                    font: { size: 16 }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y} drivers`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Drivers'
+                    }
+                }
+            }
+        }
+    });
+    
+    // 3D-style Bar Chart
+    const ownershipChart3D = new Chart(document.getElementById('ownershipChart3D').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ownershipYears,
+            datasets: [
+                {
+                    label: 'Own Vehicle',
+                    data: ownData,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: '#28a745',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Company Vehicle',
+                    data: companyData,
+                    backgroundColor: 'rgba(0, 123, 255, 0.7)',
+                    borderColor: '#007bff',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Driver Vehicle Ownership (3D Bar)',
+                    font: { size: 16 }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y} drivers`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Year' },
+                    stacked: false
+                },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Drivers' },
+                    stacked: false
+                }
+            }
+        }
+    });
+    
+    // Toggle for Ownership Chart
+    document.getElementById('ownershipToggle').addEventListener('change', function () {
+        document.getElementById('ownershipChart2D').style.display = this.checked ? 'none' : 'block';
+        document.getElementById('ownershipChart3D').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Default 2D on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('ownershipToggle').checked = false;
+        document.getElementById('ownershipChart2D').style.display = 'block';
+        document.getElementById('ownershipChart3D').style.display = 'none';
+    });
+    </script>
+    
+
+{% endblock scripts %}

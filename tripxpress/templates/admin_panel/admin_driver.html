@@ -1,0 +1,848 @@
+{% extends "admin_panel/base.html" %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Driver</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashbord' %}">Home</a></li>
+            <li class="breadcrumb-item active">Driver</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="content">
+    <div class="container-fluid">
+    
+<div class="mb-3 d-flex justify-content-end gap-2">
+  <!-- Add Driver Button -->
+  <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#modal-xl">
+    <i class="fas fa-plus"></i> Add Driver
+  </button>
+  <button type="button" class="btn btn-success mr-3" data-toggle="modal" data-target="#modal-export">
+    <i class="fas fa-cloud-upload-alt"></i> Export Driver
+  </button>
+  <!-- Delete Selected Button (initially hidden) -->
+  <button type="button" class="btn btn-danger d-none mr-3" id="deleteSelectedBtn" data-toggle="modal" data-target="#deleteSelectedModal">
+    <i class="fas fa-trash"></i> Delete Selected
+  </button>
+</div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+
+                  <table id='example2' class="table table-bordered table-hover table-striped">
+                    <thead class="thead-dark text-white text-center ">
+                      <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Email</th>
+                        <th>Company Email</th>
+                        <th>Phone Number</th>
+                        <th>Ownership</th>
+                        <th>Joined At</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                       
+                      </tr>
+                    </thead>
+                    <tbody class="text-center">
+                      {% for driver in drivers %}
+                      <tr>
+                        <td><input type="checkbox" class="driver-checkbox" value="{{ driver.driver_id }}"></td>
+                        <td>{{ driver.first_name }} {{ driver.last_name}}</td>
+                        <td>{{ driver.age }}</td>
+                        <td>{{ driver.email }}</td>
+                        <td>{{ driver.company_email }}</td>
+                        <td>{{ driver.phone_number }}</td>
+                        <td>{{ driver.vehicle_link }}</td>
+                        <td>{{driver.joined_at}}</td>
+                        <td class="text-center">
+                          <span class="badge badge-pill
+                            {% if driver.status == 'Available' %}badge-success
+                            {% elif driver.status == 'On Duty' %}badge-primary
+                            {% elif driver.status == 'On Leave' %}badge-warning
+                            {% elif driver.status == 'Suspended' %}badge-danger
+                            {% elif driver.status == 'Retired' %}badge-secondary
+                            {% else %}badge-light{% endif %}">
+                            {{ driver.status }}
+                          </span>
+                        </td>
+          
+                        
+                        
+                        <td >
+                          <!-- Edit Button -->
+                           
+                          <button type="button" class="btn btn-sm btn-outline-warning mr-2" data-toggle="modal" data-target="#editmodel{{ driver.driver_id }}">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          
+                          <button type="button" class="btn btn-sm btn-outline-danger delete-driver" 
+                          data-toggle="modal" data-target="#deleteModal{{ driver.driver_id }}">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                          
+                        </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+  
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <!-- Add modal -->
+    <div class="modal fade" id="modal-xl">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h4 class="modal-title">Add Driver</h4>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="" method="post" enctype="multipart/form-data" id="driver-form">
+              {% csrf_token %}
+              <div class="row">
+               
+                <div class="col-md-4 mb-3">
+                  <label for="name">First Name</label>
+                  <input type="text" class="form-control" name="first_name" placeholder="Enter driver name">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="name">Last Name</label>
+                  <input type="text" class="form-control" name="last_name" placeholder="Enter driver name">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="age">Date of birth</label>
+                  <input type="date" class="form-control" name="date_of_birth" placeholder="Enter age">
+                </div>
+    
+                <!-- Email -->
+                <div class="col-md-4 mb-3">
+                  <label for="email">Driver Email</label>
+                  <input type="email" class="form-control" name="email" placeholder="Enter email">
+                </div>
+    
+                <!-- Phone Number -->
+                <div class="col-md-4 mb-3">
+                  <label for="phone_number">Phone Number</label>
+                  <input type="text" class="form-control" name="phone_number" placeholder="+91xxxxxxxxxx">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="vehicle_choice">Ownership</label>
+                  <select class="form-control" name="vehicle_link" id="vehicle_choice">
+                    <option value="">Select Ownership</option>
+                    <option value="own" {% if vehicle_link == "own" %}selected{% endif %}>Own Vehicle</option>
+                    <option value="company" {% if vehicle_link == "company" %}selected{% endif %}>Company Vehicle</option>
+                   
+                  </select>
+                </div>
+                
+                <!-- Company Email -->
+              
+                <!-- Country -->
+                <div class="col-md-4 mb-3">
+                  <label for="country">Country</label>
+                  <select class="form-control" name="country" id="country">
+                    <option value="">Select Country</option>
+                    {% for country in countries %}
+                      <option value="{{ country.id }}">{{ country.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+    
+                <!-- State -->
+                <div class="col-md-4 mb-3">
+                  <label for="state">State</label>
+                  <select class="form-control" name="state" id="state">
+                    <option value="">Select State</option>
+                    {% for state in states %}
+                      <option value="{{ state.id }}">{{ state.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+    
+                <!-- City -->
+                <div class="col-md-4 mb-3">
+                  <label for="city">City</label>
+                  <select class="form-control" name="city" id="city">
+                    <option value="">Select City</option>
+                    {% for city in cities %}
+                      <option value="{{ city.id }}">{{ city.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="age">Joining Date</label>
+                  <input type="date" class="form-control" name="joined_at" placeholder="Enter age">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="driving_licence">Driving Licence</label>
+                  <input type="text" class="form-control" name="driving_licence"></label>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="form-group">
+                    <label>Driving Licence Type</label>
+                    <div class="select2-purple">
+                      <select class="select2" multiple="multiple" name="vehicle_driver_type[]" data-placeholder="Select Driving Licence Type" data-dropdown-css-class="select2-purple" style="width: 100%;">
+                        <option value="2" {% if '2' in vehicle_driver_type %}selected{% endif %}>2 Wheeler</option>
+                        <option value="4" {% if '4' in vehicle_driver_type %}selected{% endif %}>4 Wheeler</option>
+                      </select>
+
+                    </div>
+                  </div>
+
+              </div>
+            </div>
+
+              <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- Edit modal -->
+{% for driver in drivers %}
+<div class="modal fade" id="editmodel{{ driver.driver_id }}">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">Edit Driver</h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'admin_driver_edit' driver.driver_id %}" method="post" enctype="multipart/form-data" class="driver-form">
+          {% csrf_token %}
+          <div class="row">
+           
+            <div class="col-md-4 mb-3">
+              <label for="name">First Name</label>
+              <input type="text" class="form-control" name="edit_first_name" value="{{ driver.first_name }}" placeholder="Enter driver name">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="name">Last Name</label>
+              <input type="text" class="form-control" name="edit_last_name" value="{{ driver.last_name }}" placeholder="Enter driver name">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="age">Date of Birth</label>
+              <input type="date" class="form-control" name="edit_date_of_birth" 
+                     value="{{ driver.date_of_birth|date:'Y-m-d' }}" placeholder="Enter age">
+            </div>
+            
+            <!-- Email -->
+            <div class="col-md-4 mb-3">
+              <label for="email">Driver Email</label>
+              <input type="email" class="form-control" name="edit_email" value="{{ driver.email }}" placeholder="Enter email">
+            </div>
+
+            <!-- Phone Number -->
+            <div class="col-md-4 mb-3">
+              <label for="phone_number">Phone Number</label>
+              <input type="text" class="form-control" name="edit_phone_number" value="{{ driver.phone_number }}" placeholder="+91xxxxxxxxxx">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label for="vehicle_choice{{ driver.driver_id }}">Ownership</label>
+              <select class="form-control" name="edit_vehicle_link" id="vehicle_choice{{ driver.driver_id }}">
+                <option value="">Select Ownership</option>
+                <option value="own" {% if driver.vehicle_link == "own" %}selected{% endif %}>Own Vehicle</option>
+                <option value="company" {% if driver.vehicle_link == "company" %}selected{% endif %}>Company Vehicle</option>
+               
+              </select>
+            </div>
+            
+          
+            <!-- Country -->
+            <div class="col-md-4 mb-3">
+              <label for="country">Country</label>
+              <select name="edit_country" id="country{{ driver.driver_id }}" class="form-control country-select" data-driver-id="{{ driver.driver_id }}">
+
+
+                <option value="">Select Country</option>
+                {% for country in countries %}
+                  <option value="{{ country.id }}" {% if country.id == driver.country.id %}selected{% endif %}>
+                    {{ country.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            
+
+            <!-- State -->
+            <div class="col-md-4 mb-3">
+              <label for="state">State</label>
+              <select name="edit_state" id="state{{ driver.driver_id }}" class="form-control state-select" data-driver-id="{{ driver.driver_id }}">
+
+
+                <option value="">Select State</option>
+                {% for state in states %}
+                  <option value="{{ state.id }}" {% if state.id == driver.state.id %}selected{% endif %}>
+                    {{ state.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- City -->
+            <div class="col-md-4 mb-3">
+              <label for="city">City</label>
+              <select name="edit_city" id="city{{ driver.driver_id }}" class="form-control city-select" data-driver-id="{{ driver.driver_id }}">
+
+
+                <option value="">Select City</option>
+                {% for city in cities %}
+                  <option value="{{ city.id }}" {% if city.id == driver.city.id %}selected{% endif %}>
+                    {{ city.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="age">Joining Date</label>
+              <input type="date" class="form-control" name="edit_joined_at" 
+                     value="{{ driver.joined_at|date:'Y-m-d' }}" placeholder="Enter age">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="">Driving Licence</label>
+              <input type="text" class="form-control" name="edit_driving_licence" value="{{ driver.driving_licence }}" placeholder="Enter Driving Licence">
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-group">
+                <label>Driving Licence Type</label>
+                <div class="select2-purple">
+                  <select class="select2" id="vehicle_driver_type{{ driver.driver_id }}" multiple="multiple" data-placeholder="Select Driving Licence Type" name="edit_vehicle_driver_type[]" data-dropdown-css-class="select2-purple" style="width: 100%;">
+                    <option value="2" {% if '2' in driver.vehicle_driver_type %}selected{% endif %}>2 Wheeler</option>
+                    <option value="4" {% if '4' in driver.vehicle_driver_type %}selected{% endif %}>4 Wheeler</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+            
+            
+          </div>
+
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+   <!-- Loop through drivers -->
+   {% for driver in drivers %}
+   <!-- Unique modal ID for each driver -->
+   <div class="modal fade" id="deleteModal{{ driver.driver_id }}">
+     <div class="modal-dialog modal-lg modal-dialog-centered">
+       <div class="modal-content">
+         <div class="modal-header bg-danger text-white">
+           <h4 class="modal-title">
+             <i class="fas fa-triangle-exclamation mr-2"></i> Delete Driver
+           </h4>
+           <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+         <div class="modal-body text-center">
+           <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+           <p class="h5">Are you sure you want to delete <strong>{{ driver.name }}</strong>?</p>
+         </div>
+         <div class="modal-footer justify-content-center">
+           <form method="post" action="{% url 'admin_driver_delete' driver.driver_id %}">
+             {% csrf_token %}
+             <button type="submit" class="btn btn-danger">Yes</button>
+             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+           </form>
+         </div>
+       </div>
+     </div>
+   </div>
+   {% endfor %}
+   
+   <!--Delete record multitple-->
+   <div class="modal fade" id="deleteSelectedModal" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i> Delete Selected Drivers</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <form method="post" action="{% url 'admin_delete_multiple_drivers' %}" id="bulkDeleteForm">
+          {% csrf_token %}
+          <div class="modal-body text-center">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <p class="h6">Are you sure you want to delete the selected drivers?</p>
+            <input type="hidden" name="selected_ids" id="selectedDriverIds">
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="submit" class="btn btn-danger">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Upload CSV Modal -->
+  <div class="modal fade" id="modal-export" tabindex="-1" role="dialog" aria-labelledby="uploadCSVLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content shadow-lg border-0">
+        <form action="{% url 'admin_driver_export' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="uploadCSVLabel"><i class="fas fa-file-upload mr-2"></i>Upload Driver CSV Files</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          
+          <div class="modal-body px-4">
+            <div class="form-group">
+              <label for="csv_file" class="font-weight-bold">Choose CSV File(s)</label>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="csv_file" name="csv_files" accept=".csv" multiple required>
+                <label class="custom-file-label" for="csv_file">Choose file(s)...</label>
+              </div>
+              <small class="form-text text-muted mt-2">
+                You may upload multiple CSV files. Max individual file size allowed: <strong>1.5 GB</strong>.
+              </small>
+            </div>
+          </div>
+  
+          <div class="modal-footer justify-content-center px-4 pb-4">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i>Cancel</button>
+            <button type="submit" class="btn btn-success"><i class="fas fa-upload mr-1"></i>Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+
+</section>
+
+  
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    $('.select2').select2();
+
+    $.validator.addMethod("minAge", function (value, element, min) {
+      const birthDate = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age >= min;
+    }, "You must be at least {0} years old.");
+
+    $('#driver-form').validate({
+      ignore: ':hidden:not(.select2-hidden-accessible)',
+
+      rules: {
+        first_name: { required: true, minlength: 2 },
+        last_name: { required: true, minlength: 2 },
+        date_of_birth: { required: true, minAge: 18 },
+        email: { required: true, email: true },
+        phone_number: { required: true, minlength: 10, maxlength: 10 },
+        vehicle_link: { required: true },
+        country: { required: true },
+        state: { required: true },
+        city: { required: true },
+        joined_at: { required: true },
+        driving_licence: { required: true },
+        'vehicle_driver_type[]': { required: true }
+      },
+
+      messages: {
+        first_name: { required: "First name is required", minlength: "Must be at least 2 characters" },
+        last_name: { required: "Last name is required", minlength: "Must be at least 2 characters" },
+        date_of_birth: { required: "Date of birth is required", minAge: "Must be at least 18 years old" },
+        email: { required: "Email is required", email: "Enter a valid email" },
+        phone_number: { required: "Phone number is required", minlength: "10 digits", maxlength: "10 digits" },
+        vehicle_link: { required: "Vehicle link is required" },
+        country: { required: "Country is required" },
+        state: { required: "State is required" },
+        city: { required: "City is required" },
+        joined_at: { required: "Joining date is required" },
+        driving_licence: { required: "Driving licence is required" },
+        'vehicle_driver_type[]': { required: "Please select Driving Licence Type" }
+      },
+
+      errorElement: 'span',
+      errorClass: 'text-danger',
+
+      highlight: function (element) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element) {
+        $(element).removeClass('is-invalid');
+      },
+
+      errorPlacement: function (error, element) {
+        if (element.hasClass('select2-hidden-accessible')) {
+          error.insertAfter(element.next('.select2-container'));
+        } else {
+          error.insertAfter(element);
+        }
+      }
+    });
+  });
+</script>
+
+
+<script>
+  const loadStatesUrl = "{% url 'get_states' %}";
+  const loadCitiesUrl = "{% url 'get_cities' %}";
+  const loadBranchesUrl = "{% url 'get_branches' %}";
+
+  $(document).ready(function () {
+    // Load states when a country is selected
+    $("#country").change(function () {
+      const countryId = $(this).val();
+      if (!countryId) {
+        $("#state").html('<option value="">Select State</option>');
+        $("#city").html('<option value="">Select City</option>');
+        $("#branch").html('<option value="">Select Branch</option>');
+        return;
+      }
+
+      $.ajax({
+        url: loadStatesUrl,
+        data: { country_id: countryId },
+        success: function (data) {
+          $("#state").html('<option value="">Select State</option>');
+          $("#city").html('<option value="">Select City</option>');
+          $("#branch").html('<option value="">Select Branch</option>');
+          data.forEach(function (state) {
+            $("#state").append('<option value="' + state.id + '">' + state.name + '</option>');
+          });
+        }
+      });
+    });
+
+    // Load cities when a state is selected
+    $("#state").change(function () {
+      const stateId = $(this).val();
+      if (!stateId) {
+        $("#city").html('<option value="">Select City</option>');
+        $("#branch").html('<option value="">Select Branch</option>');
+        return;
+      }
+
+      $.ajax({
+        url: loadCitiesUrl,
+        data: { state_id: stateId },
+        success: function (data) {
+          $("#city").html('<option value="">Select City</option>');
+          $("#branch").html('<option value="">Select Branch</option>');
+          data.forEach(function (city) {
+            $("#city").append('<option value="' + city.id + '">' + city.name + '</option>');
+          });
+        }
+      });
+    });
+
+    // Load branches when a city is selected
+    $("#city").change(function () {
+      const cityId = $(this).val();
+      if (!cityId) {
+        $("#branch").html('<option value="">Select Branch</option>');
+        return;
+      }
+
+      $.ajax({
+        url: loadBranchesUrl,
+        data: { city_id: cityId },
+        success: function (data) {
+          $("#branch").html('<option value="">Select Branch</option>');
+          data.forEach(function (branch) {
+            $("#branch").append('<option value="' + branch.id + '">' + branch.name + '</option>');
+          });
+        }
+      });
+    });
+  });
+</script>
+
+<!--Edit scripts-->
+<script>
+  $(document).ready(function () {
+    $('.select2').select2();
+
+    $.validator.addMethod("minAge", function (value, element, min) {
+      const birthDate = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age >= min;
+    }, "You must be at least 18 years old");
+
+    $('.driver-form').each(function () {
+      $(this).validate({
+        ignore: ':hidden:not(.select2-hidden-accessible)',
+        rules: {
+          edit_first_name: { required: true, minlength: 2 },
+          edit_last_name: { required: true, minlength: 2 },
+          edit_date_of_birth: { required: true, minAge: 18 },
+          edit_email: { required: true, email: true },
+          edit_phone_number: { required: true, digits: true, minlength: 10, maxlength: 10 },
+          edit_country: { required: true },
+          edit_state: { required: true },
+          edit_city: { required: true },
+          edit_joined_at: { required: true },
+          edit_driving_licence: { required: true },
+          'edit_vehicle_driver_type[]': { required: true }
+        },
+        messages: {
+          edit_first_name: { required: "First name is required", minlength: "Must be at least 2 characters" },
+          edit_last_name: { required: "Last name is required", minlength: "Must be at least 2 characters" },
+          edit_date_of_birth: { required: "Date of birth is required", minAge: "Must be at least 18 years old" },
+          edit_email: { required: "Email is required", email: "Enter a valid email" },
+          edit_phone_number: { required: "Phone number is required", digits: "Only numbers allowed", minlength: "10 digits", maxlength: "10 digits" },
+          edit_country: { required: "Country is required" },
+          edit_state: { required: "State is required" },
+          edit_city: { required: "City is required" },
+          edit_joined_at: { required: "Joining date is required" },
+          edit_driving_licence: { required: "Driving licence is required" },
+          'edit_vehicle_driver_type[]': { required: "Please select Driving Licence Type" }
+        },
+        errorElement: 'span',
+        errorClass: 'text-danger',
+        highlight: function (element) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element) {
+          $(element).removeClass('is-invalid');
+        },
+        errorPlacement: function (error, element) {
+          if (element.hasClass('select2-hidden-accessible')) {
+            error.insertAfter(element.next('.select2-container'));
+          } else {
+            error.insertAfter(element);
+          }
+        }
+      });
+    });
+  });
+</script>
+
+
+<script>
+  $(document).ready(function () {
+    const loadStatesUrl = "{% url 'get_states' %}";
+    const loadCitiesUrl = "{% url 'get_cities' %}";
+
+    // Handle country change → load states
+    $(document).on('change', '.country-select', function () {
+      const countryId = $(this).val();
+      const driverId = $(this).data('driver-id');
+      const stateSelect = $('#state' + driverId);
+      const citySelect = $('#city' + driverId);
+
+      stateSelect.html('<option value="">Select State</option>');
+      citySelect.html('<option value="">Select City</option>');
+
+      if (countryId) {
+        $.ajax({
+          url: loadStatesUrl,
+          data: { country_id: countryId },
+          success: function (states) {
+            states.forEach(function (state) {
+              stateSelect.append(`<option value="${state.id}">${state.name}</option>`);
+            });
+          }
+        });
+      }
+    });
+
+    // Handle state change → load cities
+    $(document).on('change', '.state-select', function () {
+      const stateId = $(this).val();
+      const driverId = $(this).data('driver-id');
+      const citySelect = $('#city' + driverId);
+
+      citySelect.html('<option value="">Select City</option>');
+
+      if (stateId) {
+        $.ajax({
+          url: loadCitiesUrl,
+          data: { state_id: stateId },
+          success: function (cities) {
+            cities.forEach(function (city) {
+              citySelect.append(`<option value="${city.id}">${city.name}</option>`);
+            });
+          }
+        });
+      }
+    });
+
+    // Preload state & city when modal opens
+    $('.modal').on('shown.bs.modal', function () {
+      const modal = $(this);
+      const countrySelect = modal.find('.country-select');
+      const stateSelect = modal.find('.state-select');
+      const citySelect = modal.find('.city-select');
+
+      const countryId = countrySelect.val();
+      const stateId = stateSelect.val();
+      const cityId = citySelect.val();
+      const driverId = countrySelect.data('driver-id');
+
+      // Load states
+      if (countryId) {
+        $.ajax({
+          url: loadStatesUrl,
+          data: { country_id: countryId },
+          success: function (states) {
+            stateSelect.html('<option value="">Select State</option>');
+            states.forEach(function (state) {
+              const selected = state.id == stateId ? 'selected' : '';
+              stateSelect.append(`<option value="${state.id}" ${selected}>${state.name}</option>`);
+            });
+
+            // Load cities if state is already selected
+            if (stateId) {
+              $.ajax({
+                url: loadCitiesUrl,
+                data: { state_id: stateId },
+                success: function (cities) {
+                  citySelect.html('<option value="">Select City</option>');
+                  cities.forEach(function (city) {
+                    const selected = city.id == cityId ? 'selected' : '';
+                    citySelect.append(`<option value="${city.id}" ${selected}>${city.name}</option>`);
+                  });
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+  });
+</script>
+
+
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+<!--Delete scripts-->
+<script>
+  $(document).ready(function () {
+    // Toggle all checkboxes when "Select All" is clicked
+    $("#selectAll").click(function () {
+      $(".driver-checkbox").prop('checked', this.checked);
+      toggleDeleteButton();
+    });
+  
+    // When any individual checkbox is clicked
+    $(".driver-checkbox").on("change", function () {
+      let total = $(".driver-checkbox").length;
+      let checked = $(".driver-checkbox:checked").length;
+  
+      
+      $("#selectAll").prop("checked", total === checked);
+  
+      
+      toggleDeleteButton();
+    });
+  
+   
+    function toggleDeleteButton() {
+      const selected = $(".driver-checkbox:checked").length;
+      if (selected > 1) {
+        $("#deleteSelectedBtn").removeClass('d-none');
+      } else {
+        $("#deleteSelectedBtn").addClass('d-none');
+      }
+    }
+  $("#deleteSelectedBtn").click(function () {
+      const selectedIds = $(".driver-checkbox:checked").map(function () {
+        return $(this).val();
+      }).get().join(",");
+      $("#selectedDriverIds").val(selectedIds);
+    });
+  });
+  
+</script>
+
+<!--Export scripts-->
+<script>
+  $('#csv_file').on('change', function () {
+    var fileNames = Array.from(this.files).map(file => file.name).join(', ');
+    $(this).next('.custom-file-label').html(fileNames || 'Choose file(s)...');
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('input[name="vehicle_driver_type"]');
+    const selectedText = document.getElementById('selectedTypes');
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const selected = Array.from(checkboxes)
+          .filter(i => i.checked)
+          .map(i => i.nextElementSibling.innerText);
+        selectedText.innerText = selected.length ? selected.join(', ') : 'Select Type';
+      });
+    });
+  });
+</script>
+
+  
+{% endblock scripts %}

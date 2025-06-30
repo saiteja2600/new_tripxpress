@@ -1,0 +1,104 @@
+{% extends "admin_panel/base.html" %}
+
+{% load static %}
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Profile</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'admin_dashbord' %}">Home</a></li>
+          <li class="breadcrumb-item active">Profile</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="row no-gutters">
+            <!-- Left: Profile Image -->
+            <div class="col-md-4 text-center p-4 bg-light ">
+              <div class="profile-pic-wrapper">
+                <form action="" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  
+                  {% if request.session.admin_profile %}
+                    <img src="{{ request.session.admin_profile }}" class="profile-pic" alt="Profile Image">
+                  {% else %}
+                    <div class="initials">
+                      {{ request.session.admin_name|default:"AD" }}
+                    </div>
+                  {% endif %}
+              
+                  <label for="upload-input" class="upload-icon">
+                    <i class="fas fa-plus"></i>
+                  </label>
+                  <input type="file" name="profile_image" id="upload-input" class="upload-input" accept="image/*" onchange="this.form.submit();">
+                </form>
+              </div>
+              
+              
+            </div>
+
+            <!-- Right: Details -->
+            <div class="col-md-8 p-4">
+              <h5 class="mb-3">Admin Details</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <th>Email:</th>
+                  <td>{{ request.session.admin_email }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Phone:</th>
+                  <td>{{ request.session.admin_phone }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Country:</th>
+                  <td>{{ request.session.admin_country }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>State:</th>
+                  <td>{{ request.session.admin_state }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>City:</th>
+                  <td>{{ request.session.admin_city }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Branch:</th>
+                  <td>{{ request.session.admin_branch }}
+                    <span class="edit-icon"><i class="fas fa-pencil-alt"></i></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+
+{% block script %}
+
+{% endblock script %}
