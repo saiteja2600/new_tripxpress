@@ -1,0 +1,96 @@
+.login-profile{
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url('../../images/login_image.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2rem;
+}
+
+.logo-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.logo-title-container img {
+    width: 50px;
+    height: auto;
+}
+
+.logo-title-container a {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.login-card-body {
+    background-color: transparent !important;
+    color: #fff;
+}
+
+.login-card-body input {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+}
+
+.login-card-body input::placeholder {
+    color: #f0f0f0;
+}
+
+.login-card-body .input-group-text {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+}
+
+.login-box .btn-primary {
+    background-color: #6a11cb;
+    border: none;
+    box-shadow: 0 4px 14px rgba(106, 17, 203, 0.4);
+}
+
+.login-box .btn-primary:hover {
+    background-color: #4b0fb8;
+}
+
+.brand-text {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+.brand-text .highlight {
+    color: #0ecbfa;
+    /* Bootstrap warning/golden yellow */
+}
+.login-box {
+    position: relative;
+    z-index: 1;
+}
+
+.swal2-container {
+    z-index: 9999 !important;
+}
+@media (max-width: 576px) {
+    .logo-title-container {
+        flex-direction: column;
+    }
+
+    .logo-title-container a {
+        font-size: 22px;
+    }
+}

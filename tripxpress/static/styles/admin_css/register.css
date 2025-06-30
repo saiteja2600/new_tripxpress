@@ -1,0 +1,118 @@
+.register-profile {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../../images/admin_register.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    font-family: 'Source Sans Pro', sans-serif;
+    margin: 5%;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    color: #fff;
+}
+
+.glass-card input::placeholder {
+    color: #e0e0e0;
+}
+
+.glass-card input.form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+}
+.glass-card select.form-control {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L0 0h12L6 8z' fill='%23ffffff'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2rem;
+    cursor: pointer;
+}
+
+.glass-card select.form-control option {
+    background-color: rgba(255, 255, 255, 0.15);
+    
+    color: rgb(7, 7, 7);
+}
+
+.glass-card input.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    color: white;
+}
+
+.glass-card h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #fff;
+    text-align: center;
+    word-wrap: break-word;
+}
+.brand-text {
+    font-weight: 700;
+    font-size: 2.8rem;
+    color: #ffffff;
+    /* White for 'Trip' */
+}
+
+.brand-text .highlight {
+    color: #0ecbfa;
+    /* Light blue for 'Xpress' */
+}
+
+@media (max-width: 740.98px) {
+    .glass-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 10px;
+    }
+
+    .glass-card h3 {
+        font-size: 1.6rem;
+    }
+
+    .glass-card input.form-control {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .glass-card .btn {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .text-center.mt-3 a {
+        font-size: 0.95rem;
+    }
+
+    .register-page .container {
+        padding: 0 10px;
+    }
+
+    .register-page .row {
+        margin: 0;
+    }
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #ffffff;
+            /* White for 'Trip' */
+        }
+    
+        .brand-text .highlight {
+            color: #0ecbfa;
+            /* Light blue for 'Xpress' */   }
+}

@@ -1,0 +1,279 @@
+/* Custom styles for TripXpress branding */
+.navbar .rounded-circle {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+.nav-sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+.nav-sidebar .nav-link:hover {
+    background-color: #0056b3 !important;
+    color: #fff;
+}
+
+.nav-sidebar .nav-icon {
+    border-radius: 50%;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Initials avatar */
+.avatar-initials {
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 50%;
+    font-size: 14px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Search block */
+.navbar-search-block {
+    background-color: #343a40;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* Badge animations (optional) */
+.navbar-badge {
+    font-size: 0.75rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+.brand-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border-radius: 50%;
+}
+
+.tripxpress-brand {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 10px;
+}
+
+.brand-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-text {
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: #ffffff;
+}
+
+.brand-text .highlight {
+    color: #0ecbfa;
+    /* Bootstrap warning/golden yellow */
+}
+
+.stylish-tagline {
+    font-size: 0.70rem;
+    color: #90caf9;
+
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-style: italic;
+    text-transform: capitalize;
+    transition: all 0.3s ease;
+}
+
+
+
+.tripxpress-brand:hover .brand-text {
+    color: #ffffff;
+
+}
+
+.tripxpress-brand:hover .brand-text .highlight {
+    color: #0febf3;
+
+}
+
+.tripxpress-brand:hover .stylish-tagline {
+    color: #ffffff;
+    letter-spacing: 1px;
+
+    opacity: 1;
+}
+
+/* profile image */
+.profile-pic-wrapper {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto;
+}
+
+.cropper-image {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+.profile-pic,
+.initials {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #7f58ff;
+    background: linear-gradient(135deg, #9f70fd, #58caff);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    font-weight: bold;
+}
+
+.upload-icon {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid white;
+    font-size: 16px;
+    z-index: 2;
+}
+
+.upload-input {
+    display: none;
+}
+
+.table tr:hover .edit-icon {
+    opacity: 1;
+}
+
+.edit-icon {
+    margin-left: 10px;
+    color: #007bff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease; }
+
+
+/* Toggle Buttons */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    height: 30px;
+  }
+  
+  .switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider-toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #6c757d;
+    transition: 0.4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  .slider-toggle .label-2d,
+  .slider-toggle .label-3d {
+    z-index: 2;
+    width: 50%;
+    text-align: center;
+    pointer-events: none;
+    
+  }
+  
+  .slider-toggle::before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 32px;
+    left: 3px;
+    bottom: 3px;
+    background-color: rgb(15, 1, 1);
+    transition: 0.4s;
+    border-radius: 20px;
+    z-index: 1;
+  }
+  
+  .switch-toggle input:checked + .slider-toggle::before {
+    transform: translateX(35px);
+  }
+  canvas {
+      transition: transform 0.3s ease;
+  }
+
+  canvas:hover {
+      transform: scale(1.05);
+  }
+
+  .custom-multiselect .dropdown-arrow {
+      font-size: 0.9rem;
+      color: #495057;
+  }
+
+  .custom-multiselect .form-control {
+      background-color: #fff;
+      border: 1px solid #ced4da;
+      height: 38px;
+      /* Default Bootstrap form-control height */
+  }
+
+  .custom-multiselect .dropdown-menu {
+      max-height: 150px;
+      overflow-y: auto;
+  }

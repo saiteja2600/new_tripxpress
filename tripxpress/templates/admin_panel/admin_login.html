@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TripXpress - Go Places, Fast. Easy</title>
+   <!-- Google Font: Source Sans Pro -->
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+   <!-- Font Awesome -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome-free/css/all.min.css' %}">
+   <!-- Ionicons -->
+   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+   <!-- Tempusdominus Bootstrap 4 -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+   <!-- iCheck -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+   <!-- JQVMap -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/jqvmap/jqvmap.min.css' %}">
+   <!-- Theme style -->
+   <link rel="stylesheet" href="{% static 'assets/dist/css/adminlte.min.css' %}">
+   <!-- overlayScrollbars -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+   <!-- Daterange picker -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/daterangepicker/daterangepicker.css' %}">
+   <!-- summernote -->
+   <link rel="stylesheet" href="{% static 'assets/plugins/summernote/summernote-bs4.min.css' %}">
+ 
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.min.css">
+ 
+   
+ <link rel="stylesheet" href="{% static 'assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+ <link rel="stylesheet" href="{% static 'assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+ <link rel="stylesheet" href="{% static 'assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+ 
+   {% comment %} Icon {% endcomment %}
+     <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" type="image/x-icon">
+     <link rel="stylesheet" href="{% static 'styles/admin_css/login.css' %}">
+  
+</head>
+<body class="hold-transition login-page login-profile">
+
+    <div class="login-box">
+      <div class="card glass-card">
+        <div class="login-logo logo-title-container">
+          <img src="{% static 'images/ticket_logo.png' %}" alt="Logo">
+          <span class="brand-text">Trip<span class="highlight">Xpress</span></span>
+        </div>
+        <div class="card-body login-card-body">
+  
+          <form action="" method="post" class="login-form">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+              <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+              
+            </div>
+            <div class="form-group mb-3">
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+              
+            </div>
+            <div class="row">
+              <div class="col-8">
+                <div class="icheck-primary">
+                  <input type="checkbox" id="remember" name="remember">
+                  <label for="remember">Remember Me</label>
+                </div>
+              </div>
+              <div class="col-4">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              </div>
+            </div>
+          </form>
+  
+          <p class="mb-1">
+            <a href="forgot-password.html">I forgot my password</a>
+          </p>
+          <p class="mb-0">
+            <a href="{% url 'admin_register' %}" class="text-center">Register a new membership</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+
+<!-- jQuery UI -->
+<script src="{% static 'assets/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<script>
+  $.widget.bridge('uibutton', $.ui.button);
+</script>
+
+<!-- Bootstrap -->
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- jQuery Validation -->
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.all.min.js"></script>
+
+<!-- DataTables -->
+<script src="{% static 'assets/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'assets/plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'assets/plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'assets/plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- AdminLTE -->
+<script src="{% static 'assets/dist/js/adminlte.js' %}"></script>
+
+<!-- Other Plugins (if used) -->
+<script src="{% static 'assets/plugins/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'assets/plugins/sparklines/sparkline.js' %}"></script>
+<script src="{% static 'assets/plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+<script src="{% static 'assets/plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<script src="{% static 'assets/plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'assets/plugins/daterangepicker/daterangepicker.js' %}"></script>
+<script src="{% static 'assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<script src="{% static 'assets/plugins/summernote/summernote-bs4.min.js' %}"></script>
+<script src="{% static 'assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $('.login-form').validate({
+      rules: {
+        email: {
+          required: true,
+          email: true
+        },
+        password: {
+          required: true
+        }
+      },
+      messages: {
+        email: {
+          required: 'Enter Email',
+          email: 'Enter a valid Email'
+        },
+        password: {
+          required: 'Enter Password'
+        }
+      },
+      errorElement: 'span',
+      errorClass: 'text-danger',
+      highlight: function (element) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element) {
+        $(element).removeClass('is-invalid');
+      }
+    });
+  });
+</script>
+  
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+
+</body>
+</html>
