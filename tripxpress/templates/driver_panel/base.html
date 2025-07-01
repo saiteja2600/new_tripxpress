@@ -77,7 +77,7 @@
                   <i class="fas fa-user mr-2"></i> Profile
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item text-danger">
+                <a href="{% url 'driver_logout'%}" class="dropdown-item text-danger">
                   <i class="fas fa-sign-out-alt mr-2"></i> Logout
                 </a>
               </div>
@@ -141,12 +141,24 @@
                   </a>
                 </li>
       
-                <li class="nav-item">
+                <li class="nav-item has-treeview">
                   <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-cogs text-danger"></i>
-                    <p>Settings</p>
+                    <p>
+                      Settings
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
                   </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{% url 'change_password' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Change Password</p>
+                      </a>
+                    </li>
+                  </ul>
                 </li>
+                
               </ul>
             </nav>
           </div>

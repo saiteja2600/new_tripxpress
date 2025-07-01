@@ -22,6 +22,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import os
 import csv
+import requests
+from django.core.files.base import ContentFile
 
 
 # ========== AJAX: Dynamic Dropdown Handlers ==========
@@ -210,6 +212,8 @@ def admin_dashbord(request):
         'years': json.dumps(sorted_years),
         'counts': json.dumps(own_data),
         'total_drivers': Driver.objects.filter(admin=admin).count(),
+        'total_company_vehicles': company_vehicle.objects.filter(driver__vehicle_link='company', admin=admin).count(),
+
         'ownership_chart': {
             'years': sorted_years,
             'own': own_data,
@@ -550,16 +554,14 @@ def admin_vehicle_edit(request, vehicle_id):
             new_vehicle_number = request.POST.get('edit_vehicle_number')
 
             # Check for duplicate vehicle number (excluding current vehicle)
-            if company_vehicle.objects.filter(vehicle_number=new_vehicle_number).exclude(vehicle_id=vehicle_id).exists():
-                messages.error(request, "Another vehicle with this number already exists.")
-                return redirect('admin_vehicles')
-
-            # Check if another vehicle is already assigned to this driver
-            # Only do this if driver is editable or stored in vehicle instance
-            if vehicle.driver:
-                if company_vehicle.objects.filter(driver=vehicle.driver).exclude(vehicle_id=vehicle_id).exists():
-                    messages.error(request, "This driver is already assigned to another vehicle.")
+            if new_vehicle_number != vehicle.vehicle_number:
+                if company_vehicle.objects.filter(vehicle_number=new_vehicle_number).exclude(vehicle_id=vehicle_id).exists():
+                    messages.error(request, "Another vehicle with this number already exists.")
                     return redirect('admin_vehicles')
+                if vehicle.driver:
+                    if company_vehicle.objects.filter(driver=vehicle.driver).exclude(vehicle_id=vehicle_id).exists():
+                        messages.error(request, "This driver is already assigned to another vehicle.")
+                        return redirect('admin_vehicles')
 
             # Save updated values
             vehicle.vehicle_name = request.POST.get('edit_vehicle_name')
@@ -575,6 +577,14 @@ def admin_vehicle_edit(request, vehicle_id):
             vehicle.vehicle_doors = request.POST.get('edit_vehicle_doors')
             vehicle.vehicle_description = request.POST.get('edit_vehicle_description')
             vehicle.vehicle_type = request.POST.get('edit_vehicle_type')
+            vehicle.vehicle_airbags = request.POST.get('edit_vehicle_airbags')
+            vehicle.vehicle_brake_type = request.POST.get('edit_vehicle_brake_type')
+            vehicle.vehicle_start_type = request.POST.get('edit_vehicle_start_type')
+            vehicle.vehicle_weight = request.POST.get('edit_vehicle_weight')
+            vehicle.tempo_seats = request.POST.get('edit_tempo_seats')
+            vehicle.tempo_doors = request.POST.get('edit_tempo_doors')
+            vehicle.vehicle_capacity = request.POST.get('edit_vehicle_capacity')
+            
 
             if request.FILES.get('edit_vehicle_image'):
                 vehicle.vehicle_image = request.FILES.get('edit_vehicle_image')
@@ -587,3 +597,26 @@ def admin_vehicle_edit(request, vehicle_id):
         except company_vehicle.DoesNotExist:
             messages.error(request, "Vehicle not found.")
             return redirect('admin_vehicles')
+@never_cache
+def admin_vehicle_delete(request, vehicle_id):
+    try:
+        vehicle = company_vehicle.objects.get(vehicle_id=vehicle_id)
+        vehicle.delete()
+        messages.success(request, "Vehicle deleted successfully.")
+        return redirect('admin_vehicles')
+    except company_vehicle.DoesNotExist:
+        messages.error(request,"Vehicle not found.")
+        return redirect('admin_vehicles')
+        
+
+@never_cache
+def admin_delete_multiple_vehicles(request):
+    ids = request.POST.get("selected_ids")
+    if ids:
+        vehicle_ids = ids.split(",")
+        company_vehicle.objects.filter(vehicle_id__in=vehicle_ids).delete()
+        messages.success(request, "Selected vehicles deleted successfully.")
+    else:
+        messages.error(request, "No vehicles selected.")
+    return redirect('admin_vehicles')
+

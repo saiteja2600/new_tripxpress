@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('tripxpress/Admin/', include('admin_panel.urls')),
+    path('tripxpress/Driver/', include('driver_panel.urls')),
    
     
 ]
