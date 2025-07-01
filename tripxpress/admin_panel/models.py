@@ -187,6 +187,8 @@ class company_vehicle(models.Model):
     tempo_seats = models.CharField(max_length=50, null=True, blank=True)
     tempo_doors = models.CharField(max_length=50, null=True, blank=True)
     vehicle_capacity = models.CharField(max_length=50, null=True, blank=True)
+    
+    
 
     def save(self, *args, **kwargs):
         if self.pk:

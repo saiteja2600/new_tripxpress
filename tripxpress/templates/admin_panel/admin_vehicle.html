@@ -24,6 +24,9 @@
             <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#modal-xl">
                 <i class="fas fa-plus"></i> Add Vehicle
               </button>
+              <button type="button" class="btn btn-danger d-none mr-3" id="deleteSelectedBtn" data-toggle="modal" data-target="#deleteSelectedModal">
+                <i class="fas fa-trash"></i> Delete Selected
+              </button>
         </div>
         <div class="row">
             <div class="col-12">
@@ -36,6 +39,7 @@
                                         <th><input type="checkbox" id="selectAll"></th>
                                         <th>Photo</th>
                                         <th>Name</th>
+                                        <th>Vehicle Name</th>
                                         <th>Compnay Email</th>
                                         <th>Phone Number</th>
                                         <th>Ownership</th>
@@ -52,6 +56,7 @@
                                         <td>
                                             <img src="{{ vehicle.vehicle_image.url }}" alt="" class="img-fluid" width="100" height="100">
                                         </td>
+                                        <td>{{ vehicle.driver.first_name }} {{ vehicle.driver.last_name }}</td>
                                         <td>{{ vehicle.vehicle_name }}</td>
                                         <td>{{ vehicle.driver.company_email }}</td>
                                         <td>{{ vehicle.driver.phone_number }}</td>
@@ -94,7 +99,7 @@
     </div>
 </section>
 <!--Create Vehicle Modal-->
-<!--Create Vehicle Modal-->
+
 <div class="modal fade" id="modal-xl">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
@@ -204,21 +209,21 @@
 <!--Edit Vehicle Modal-->
 {% for i in vehicles %}
 <div class="modal fade" id="editmodel{{ i.vehicle_id }}">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h4 class="modal-title">Edit Vehicle</h4>
-          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-  
-        <div class="modal-body">
-          <form method="POST" enctype="multipart/form-data" action="{% url 'admin_vehicle_edit' vehicle_id=i.vehicle_id %}">
-            {% csrf_token %}
-  
-            <!-- Driver Selection -->
-            <div class="form-group">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h4 class="modal-title">Edit Vehicle</h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form method="POST" enctype="multipart/form-data" class="edit-vehicle-form" action="{% url 'admin_vehicle_edit' vehicle_id=i.vehicle_id %}">
+          {% csrf_token %}
+
+          <div class="row">
+            <div class="col-md-6 mb-3 form-group">
               <label for="driverSelect{{ i.vehicle_id }}">Select Driver</label>
               <select id="driverSelect{{ i.vehicle_id }}" name="driver" class="form-control" disabled>
                 <option value="">-- Select Driver --</option>
@@ -238,117 +243,144 @@
                 {% endfor %}
               </select>
             </div>
-  
-            <!-- Auto-Filled Driver Details -->
-            <div id="driverDetails{{ i.vehicle_id }}" style="display: none;" class="mb-3">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label>Email</label>
-                  <input type="email" id="driverEmail{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Phone</label>
-                  <input type="text" id="driverPhone{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Ownership</label>
-                  <input type="text" id="driverowner{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Driving Licence</label>
-                  <input type="text" id="driverLicence{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Licence Type</label>
-                  <input type="text" id="driverType{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label>Joined At</label>
-                  <input type="text" id="driverjoined{{ i.vehicle_id }}" class="form-control" readonly>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Vehicle Fields (Prefilled values) -->
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label>Vehicle Name</label>
-                <input type="text" name="edit_vehicle_name" value="{{ i.vehicle_name }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Vehicle Model</label>
-                <input type="text" name="edit_vehicle_model" value="{{ i.vehicle_model }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Vehicle Number</label>
-                <input type="text" name="edit_vehicle_number" value="{{ i.vehicle_number }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Color</label>
-                <input type="text" name="edit_vehicle_color" value="{{ i.vehicle_color }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Year</label>
-                <input type="number" name="edit_vehicle_year" value="{{ i.vehicle_year }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Fuel</label>
-                <input type="text" name="edit_vehicle_fuel" value="{{ i.vehicle_fuel }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Mileage</label>
-                <input type="number" name="edit_vehicle_mileage" value="{{ i.vehicle_mileage }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Transmission</label>
-                <input type="text" name="edit_vehicle_transmission" value="{{ i.vehicle_transmission }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Engine</label>
-                <input type="text" name="edit_vehicle_engine" value="{{ i.vehicle_engine }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Seats</label>
-                <input type="number" name="edit_vehicle_seats" value="{{ i.vehicle_seats }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label>Doors</label>
-                <input type="number" name="edit_vehicle_doors" value="{{ i.vehicle_doors }}" class="form-control">
-              </div>
-              <div class="col-md-4 mb-3">
+
+            <div class="col-md-6 mb-3 form-group">
+              
                 <label>Vehicle Type</label>
-                <input type="text" name="edit_vehicle_type" value="{{ i.vehicle_type }}" class="form-control">
-              </div>
-  
-              <div class="col-md-12 mb-3">
-                <label>Vehicle Image</label>
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="customFile{{ i.vehicle_id }}" name="edit_vehicle_image" accept="image/*">
-                  <label class="custom-file-label" for="customFile{{ i.vehicle_id }}">Choose file</label>
-                </div>
-              </div>
-  
-              <div class="col-md-12 mb-3">
-                <label>Description</label>
-                <textarea name="edit_vehicle_description" class="form-control" rows="3">{{ i.vehicle_description }}</textarea>
-              </div>
+                <select id="editVehicleType{{ i.vehicle_id }}" name="edit_vehicle_type" class="form-control" disabled>
+                  <option value="">-- Select Type --</option>
+                  <option value="car" {% if i.vehicle_type == 'car' %}selected{% endif %}>Car</option>
+                  <option value="bike" {% if i.vehicle_type == 'bike' %}selected{% endif %}>Bike</option>
+                  <option value="tempo" {% if i.vehicle_type == 'tempo' %}selected{% endif %}>Tempo</option>
+                </select>
+             
+              
             </div>
-  
-            <!-- Footer Buttons -->
-            <div class="text-center mt-3">
-              <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+
+          <div id="driverDetails{{ i.vehicle_id }}" style="display: none;" class="mb-3">
+            <div class="row">
+              <div class="col-md-4 mb-3 form-group"><label>Email</label><input type="email" id="driverEmail{{ i.vehicle_id }}" class="form-control" readonly></div>
+              <div class="col-md-4 mb-3 form-group"><label>Phone</label><input type="text" id="driverPhone{{ i.vehicle_id }}" class="form-control" readonly></div>
+              <div class="col-md-4 mb-3 form-group"><label>Ownership</label><input type="text" id="driverowner{{ i.vehicle_id }}" class="form-control" readonly></div>
+              <div class="col-md-4 mb-3 form-group"><label>Driving Licence</label><input type="text" id="driverLicence{{ i.vehicle_id }}" class="form-control" readonly></div>
+              <div class="col-md-4 mb-3 form-group"><label>Licence Type</label><input type="text" id="driverType{{ i.vehicle_id }}" class="form-control" readonly></div>
+              <div class="col-md-4 mb-3 form-group"><label>Joined At</label><input type="text" id="driverjoined{{ i.vehicle_id }}" class="form-control" readonly></div>
             </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3 form-group"><label>Vehicle Name</label><input type="text" name="edit_vehicle_name" value="{{ i.vehicle_name }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Vehicle Model</label><input type="text" name="edit_vehicle_model" value="{{ i.vehicle_model }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Vehicle Number</label><input type="text" name="edit_vehicle_number" value="{{ i.vehicle_number }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Color</label><input type="text" name="edit_vehicle_color" value="{{ i.vehicle_color }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Year</label><input type="number" name="edit_vehicle_year" value="{{ i.vehicle_year }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Fuel</label><input type="text" name="edit_vehicle_fuel" value="{{ i.vehicle_fuel }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Mileage</label><input type="number" name="edit_vehicle_mileage" value="{{ i.vehicle_mileage }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Transmission</label><input type="text" name="edit_vehicle_transmission" value="{{ i.vehicle_transmission }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Engine</label><input type="text" name="edit_vehicle_engine" value="{{ i.vehicle_engine }}" class="form-control"></div>
+          </div>
+
+          <!-- Conditional fields -->
+          <div class="row vehicle-fields car-fields" style="display: none;">
+            <div class="col-md-4 mb-3 form-group"><label>Seats</label><input type="number" name="edit_vehicle_seats" value="{{ i.vehicle_seats }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Doors</label><input type="number" name="edit_vehicle_doors" value="{{ i.vehicle_doors }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Airbags</label><input type="number" name="edit_vehicle_airbags" value="{{ i.vehicle_airbags }}" class="form-control"></div>
+          </div>
+
+          <div class="row vehicle-fields bike-fields" style="display: none;">
+            <div class="col-md-4 mb-3 form-group"><label>Brake Type</label><input type="text" name="edit_vehicle_brake_type" value="{{ i.vehicle_brake_type }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Start Type</label><input type="text" name="edit_vehicle_start_type" value="{{ i.vehicle_start_type }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Bike Weight (kg)</label><input type="text" name="edit_vehicle_weight" value="{{ i.vehicle_weight }}" class="form-control"></div>
+          </div>
+
+          <div class="row vehicle-fields tempo-fields" style="display: none;">
+            <div class="col-md-4 mb-3 form-group"><label>Seats</label><input type="number" name="edit_tempo_seats" value="{{ i.tempo_seats }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Doors</label><input type="number" name="edit_tempo_doors" value="{{ i.tempo_doors }}" class="form-control"></div>
+            <div class="col-md-4 mb-3 form-group"><label>Load Capacity (kg)</label><input type="text" name="edit_vehicle_capacity" value="{{ i.vehicle_capacity }}" class="form-control"></div>
+          </div>
+
+          <div class="col-md-12 mb-3 form-group">
+            <label>Vehicle Image</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="customFile{{ i.vehicle_id }}" name="edit_vehicle_image" accept="image/*">
+              <label class="custom-file-label" for="customFile{{ i.vehicle_id }}">Choose file</label>
+            </div>
+          </div>
+
+          <div class="col-md-12 mb-3 form-group">
+            <label>Description</label>
+            <textarea name="edit_vehicle_description" class="form-control" rows="3">{{ i.vehicle_description }}</textarea>
+          </div>
+
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+  <!-- Loop through drivers -->
+  {% for i in vehicles %}
+  <!-- Unique modal ID for each driver -->
+  <div class="modal fade" id="deleteModal{{ i.vehicle_id }}">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h4 class="modal-title">
+            <i class="fas fa-triangle-exclamation mr-2"></i> Delete Driver
+          </h4>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+          <p class="h5">Are you sure you want to delete <strong>{{ i.vehicle_name }}</strong>?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <form method="post" action="{% url 'admin_vehicle_delete' i.vehicle_id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
           </form>
         </div>
       </div>
     </div>
   </div>
-</div>
+  {% endfor %}
   
 
-{% endfor %}
-  
+  <!--Delete Multiple-->
+  <div class="modal fade" id="deleteSelectedModal" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i> Delete Selected Drivers</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <form method="post" action="{% url 'admin_delete_multiple_vehicles' %}" id="bulkDeleteForm">
+          {% csrf_token %}
+          <div class="modal-body text-center">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <p class="h6">Are you sure you want to delete the selected drivers?</p>
+            <input type="hidden" name="selected_ids" id="selectedDriverIds">
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="submit" class="btn btn-danger">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
 
 
@@ -410,221 +442,394 @@
     });
     </script>
     
-<script>
-    $(document).ready(function () {
-        $('#addVehicleForm').validate({
-            rules: {
-                driver: {
-                    required: true
-                },
-                vehicle_name: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_model: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_number: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_color: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_year: {
-                    required: true,
-                    digits: true,
-                    minlength: 4,
-                    maxlength: 4
-                },
-                vehicle_fuel: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_mileage: {
-                    required: true,
-                    digits: true,
-                    minlength: 1
-                },
-                vehicle_transmission: {
-                    required: true,
-                    minlength: 3
-                },
-                vehicle_engine: {
-                    required: true,
-                    minlength: 2
-                },
-                vehicle_seats: {
-                    required: true,
-                    digits: true
-                },
-                vehicle_doors: {
-                    required: true,
-                    digits: true
-                },
-                vehicle_type: {
-                    required: true,
-                    
-                },
-                vehicle_image: {
-                    required: true
-                },
-                vehicle_description: {
-                    required: true,
-                    minlength: 5
-                },
-                vehicle_airbags: {
-                    digits: true
-                },
-                vehicle_capacity: {
-                    digits: true
-                },
-                vehicle_brake_type: {
-                    minlength: 3
-                },
-                vehicle_start_type: {
-                    minlength: 3
-                },
-                vehicle_weight: {
-                    digits: true
-                },
-                tempo_seats: {
-                    digits: true
-                },
-                tempo_doors: {
-                    digits: true
-                }
-               
-            },
-            messages: {
-                driver: {
-                    required: "Please select a driver."
-                },
-                vehicle_name: {
-                    required: "Please enter the vehicle name.",
-                    minlength: "Name must be at least 3 characters."
-                },
-                vehicle_model: {
-                    required: "Please enter the vehicle model.",
-                    minlength: "Model must be at least 3 characters."
-                },
-                vehicle_number: {
-                    required: "Please enter the vehicle number.",
-                    minlength: "Number must be at least 3 characters."
-                },
-                vehicle_color: {
-                    required: "Please enter the vehicle color.",
-                    minlength: "Color must be at least 3 characters."
-                },
-                vehicle_year: {
-                    required: "Please enter the vehicle year.",
-                    digits: "Year must be a number.",
-                    minlength: "Year must be 4 digits.",
-                    maxlength: "Year must be 4 digits."
-                },
-                vehicle_fuel: {
-                    required: "Please enter the fuel type.",
-                    minlength: "Fuel type must be at least 3 characters."
-                },
-                vehicle_mileage: {
-                    required: "Please enter mileage.",
-                    digits: "Mileage must be a number."
-                },
-                vehicle_transmission: {
-                    required: "Please enter transmission type.",
-                    minlength: "Transmission must be at least 3 characters."
-                },
-                vehicle_engine: {
-                    required: "Please enter engine info.",
-                    minlength: "Engine must be at least 2 characters."
-                },
-                vehicle_seats: {
-                    required: "Please enter number of seats.",
-                    digits: "Seats must be a number."
-                },
-                vehicle_doors: {
-                    required: "Please enter number of doors.",
-                    digits: "Doors must be a number."
-                },
-                vehicle_type: {
-                    required: "Please select a vehicle type.",
-                    
-                },
-                vehicle_image: {
-                    required: "Please upload a vehicle image."
-                },
-                vehicle_description: {
-                    required: "Please enter a description.",
-                    minlength: "Description must be at least 5 characters."
-                },
-                vehicle_airbags: {
-                    digits: "Airbags must be a number."
-                },
-                vehicle_capacity: {
-                    digits: "Capacity must be a number."
-                },
-                vehicle_brake_type: {
-                    minlength: "Brake type must be at least 3 characters."
-                },
-                vehicle_start_type: {
-                    minlength: "Start type must be at least 3 characters."
-                },
-                vehicle_weight: {
-                    digits: "Weight must be a number."
-                },
-                tempo_seats: {
-                    digits: "Seats must be a number."
-                },
-                tempo_doors: {
-                    digits: "Doors must be a number."
-                }
-            },
-            errorElement: 'span',
-            errorPlacement: function (error, element) {
-                error.addClass('text-danger');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
-            }
+    <script>
+      $(document).ready(function () {
+    
+        // Show/hide vehicle fields based on type
+        $('#vehicleCategory').on('change', function () {
+          var selected = $(this).val();
+          $('.vehicle-fields').hide(); // Hide all type-specific fields first
+    
+          if (selected === 'car') {
+            $('.car-fields').show();
+          } else if (selected === 'bike') {
+            $('.bike-fields').show();
+          } else if (selected === 'tempo') {
+            $('.tempo-fields').show();
+          }
         });
-    });
-</script>
-
-
+    
+        // Form validation
+        $('#addVehicleForm').validate({
+          ignore: [], // Ensure hidden fields can be conditionally validated
+    
+          rules: {
+            driver: { required: true },
+            vehicle_name: { required: true, minlength: 3 },
+            vehicle_model: { required: true, minlength: 3 },
+            vehicle_number: { required: true, minlength: 3 },
+            vehicle_color: { required: true, minlength: 3 },
+            vehicle_year: { required: true, digits: true, minlength: 4, maxlength: 4 },
+            vehicle_fuel: { required: true, minlength: 3 },
+            vehicle_mileage: { required: true, digits: true, minlength: 1 },
+            vehicle_transmission: { required: true, minlength: 3 },
+            vehicle_engine: { required: true, minlength: 2 },
+            vehicle_type: { required: true },
+            vehicle_image: { required: true },
+            vehicle_description: { required: true, minlength: 5 },
+    
+            // Conditionally required car fields
+            vehicle_seats: {
+              required: function () { return $('.car-fields').is(':visible'); },
+              digits: true
+            },
+            vehicle_doors: {
+              required: function () { return $('.car-fields').is(':visible'); },
+              digits: true
+            },
+            vehicle_airbags: {
+              required: function () { return $('.car-fields').is(':visible'); },
+              digits: true
+            },
+    
+            // Conditionally required bike fields
+            vehicle_brake_type: {
+              required: function () { return $('.bike-fields').is(':visible'); },
+              minlength: 3
+            },
+            vehicle_start_type: {
+              required: function () { return $('.bike-fields').is(':visible'); },
+              minlength: 3
+            },
+            vehicle_weight: {
+              required: function () { return $('.bike-fields').is(':visible'); },
+              digits: true
+            },
+    
+            // Conditionally required tempo fields
+            tempo_seats: {
+              required: function () { return $('.tempo-fields').is(':visible'); },
+              digits: true
+            },
+            tempo_doors: {
+              required: function () { return $('.tempo-fields').is(':visible'); },
+              digits: true
+            },
+            vehicle_capacity: {
+              required: function () { return $('.tempo-fields').is(':visible'); },
+              digits: true
+            }
+          },
+    
+          messages: {
+            driver: { required: "Please select a driver." },
+            vehicle_name: { required: "Please enter the vehicle name.", minlength: "Name must be at least 3 characters." },
+            vehicle_model: { required: "Please enter the vehicle model.", minlength: "Model must be at least 3 characters." },
+            vehicle_number: { required: "Please enter the vehicle number.", minlength: "Number must be at least 3 characters." },
+            vehicle_color: { required: "Please enter the vehicle color.", minlength: "Color must be at least 3 characters." },
+            vehicle_year: { required: "Please enter the vehicle year.", digits: "Year must be a number.", minlength: "Year must be 4 digits.", maxlength: "Year must be 4 digits." },
+            vehicle_fuel: { required: "Please enter the fuel type.", minlength: "Fuel type must be at least 3 characters." },
+            vehicle_mileage: { required: "Please enter mileage.", digits: "Mileage must be a number." },
+            vehicle_transmission: { required: "Please enter transmission type.", minlength: "Transmission must be at least 3 characters." },
+            vehicle_engine: { required: "Please enter engine info.", minlength: "Engine must be at least 2 characters." },
+            vehicle_type: { required: "Please select a vehicle type." },
+            vehicle_image: { required: "Please upload a vehicle image." },
+            vehicle_description: { required: "Please enter a description.", minlength: "Description must be at least 5 characters." },
+    
+            vehicle_seats: { required: "Please enter number of seats.", digits: "Seats must be a number." },
+            vehicle_doors: { required: "Please enter number of doors.", digits: "Doors must be a number." },
+            vehicle_airbags: { required: "Please enter number of airbags.", digits: "Airbags must be a number." },
+    
+            vehicle_brake_type: { required: "Please enter brake type.", minlength: "Brake type must be at least 3 characters." },
+            vehicle_start_type: { required: "Please enter start type.", minlength: "Start type must be at least 3 characters." },
+            vehicle_weight: { required: "Please enter bike weight.", digits: "Weight must be a number." },
+    
+            tempo_seats: { required: "Please enter number of seats.", digits: "Seats must be a number." },
+            tempo_doors: { required: "Please enter number of doors.", digits: "Doors must be a number." },
+            vehicle_capacity: { required: "Please enter load capacity.", digits: "Capacity must be a number." }
+          },
+    
+          errorElement: 'span',
+          errorPlacement: function (error, element) {
+            error.addClass('text-danger');
+            element.closest('.form-group').append(error);
+          },
+          highlight: function (element, errorClass, validClass) {
+            $(element).addClass('is-invalid');
+          },
+          unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass('is-invalid');
+          }
+        });
+      });
+    </script>
+    
 <!--edit model script-->
 <script>
-    $(document).ready(function () {
-      {% for i in vehicles %}
-      // Update file input label if there's an existing image
-      var fileName = "{{ i.vehicle_image.name|default_if_none:''|escapejs }}".split('/').pop();
-      if (fileName) {
-        $('#customFile{{ i.vehicle_id }}').siblings('.custom-file-label').text(fileName);
+  $(document).ready(function () {
+    {% for i in vehicles %}
+    // Pre-fill image label
+    var fileName = "{{ i.vehicle_image.name|default_if_none:''|escapejs }}".split('/').pop();
+    if (fileName) {
+      $('#customFile{{ i.vehicle_id }}').siblings('.custom-file-label').text(fileName);
+    }
+
+    // On modal open
+    $('#editmodel{{ i.vehicle_id }}').on('shown.bs.modal', function () {
+      const driverOption = $('#driverSelect{{ i.vehicle_id }} option:selected');
+
+      if (driverOption.val()) {
+        $('#driverEmail{{ i.vehicle_id }}').val(driverOption.data('email'));
+        $('#driverPhone{{ i.vehicle_id }}').val(driverOption.data('phone'));
+        $('#driverowner{{ i.vehicle_id }}').val(driverOption.data('ownership'));
+        $('#driverLicence{{ i.vehicle_id }}').val(driverOption.data('licence'));
+        $('#driverType{{ i.vehicle_id }}').val(driverOption.data('type'));
+        $('#driverjoined{{ i.vehicle_id }}').val(driverOption.data('joined'));
+        $('#driverDetails{{ i.vehicle_id }}').show();
+
+        // Enable vehicle type field only if license type is 2 or 4
+        const licenceType = driverOption.data('type');
+        if (licenceType.includes("2") || licenceType.includes("4")) {
+          $('#editVehicleType{{ i.vehicle_id }}').prop('disabled', false);
+        } else {
+          $('#editVehicleType{{ i.vehicle_id }}').prop('disabled', true);
+        }
       }
-  
-      // Auto-fill driver details on modal open
-      $('#editmodel{{ i.vehicle_id }}').on('shown.bs.modal', function () {
-        const driverSelect = $('#driverSelect{{ i.vehicle_id }}');
-        const selected = driverSelect.find('option:selected');
-  
-        if (selected.val()) {
-          $('#driverEmail{{ i.vehicle_id }}').val(selected.data('email'));
-          $('#driverPhone{{ i.vehicle_id }}').val(selected.data('phone'));
-          $('#driverowner{{ i.vehicle_id }}').val(selected.data('ownership'));
-          $('#driverLicence{{ i.vehicle_id }}').val(selected.data('licence'));
-          $('#driverType{{ i.vehicle_id }}').val(selected.data('type'));
-          $('#driverjoined{{ i.vehicle_id }}').val(selected.data('joined'));
-          $('#driverDetails{{ i.vehicle_id }}').show();
+
+      // Show existing vehicle-type-specific fields
+      let selectedType = $('#editVehicleType{{ i.vehicle_id }}').val();
+      toggleFields(selectedType, {{ i.vehicle_id }});
+    });
+
+    // Change event to show/hide field groups dynamically
+    $('#editVehicleType{{ i.vehicle_id }}').change(function () {
+      let selectedType = $(this).val();
+      toggleFields(selectedType, {{ i.vehicle_id }});
+    });
+
+    // Field toggle function
+    function toggleFields(type, id) {
+      let modal = $('#editmodel' + id);
+      modal.find('.vehicle-fields').hide();
+      if (type === 'car') {
+        modal.find('.car-fields').show();
+      } else if (type === 'bike') {
+        modal.find('.bike-fields').show();
+      } else if (type === 'tempo') {
+        modal.find('.tempo-fields').show();
+      }
+    }
+    {% endfor %}
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('.edit-vehicle-form').each(function () {
+      $(this).validate({
+        ignore: [],
+
+        rules: {
+          edit_vehicle_name: {
+            required: true,
+            minlength: 3
+          },
+          edit_vehicle_model: {
+            required: true,
+            minlength: 2
+          },
+          edit_vehicle_number: {
+            required: true,
+            minlength: 4
+          },
+          edit_vehicle_color: {
+            required: true
+          },
+          edit_vehicle_year: {
+            required: true,
+            number: true,
+            min: 1900,
+            max: new Date().getFullYear()
+          },
+          edit_vehicle_fuel: {
+            required: true
+          },
+          edit_vehicle_mileage: {
+            required: true,
+            number: true,
+            min: 1
+          },
+          edit_vehicle_transmission: {
+            required: true
+          },
+          edit_vehicle_engine: {
+            required: true
+          },
+          edit_vehicle_type: {
+            required: function (element) {
+              return !$(element).prop('disabled');
+            }
+          },
+          edit_vehicle_description: {
+            required: true,
+            minlength: 10
+          },
+
+          // Conditionally required fields based on vehicle type
+          edit_vehicle_seats: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'car';
+              }
+            }
+          },
+          edit_vehicle_doors: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'car';
+              }
+            }
+          },
+          edit_vehicle_airbags: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'car';
+              }
+            }
+          },
+          edit_vehicle_brake_type: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'bike';
+              }
+            }
+          },
+          edit_vehicle_start_type: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'bike';
+              }
+            }
+          },
+          edit_vehicle_weight: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'bike';
+              }
+            }
+          },
+          edit_tempo_seats: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'tempo';
+              }
+            }
+          },
+          edit_tempo_doors: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'tempo';
+              }
+            }
+          },
+          edit_vehicle_capacity: {
+            required: {
+              depends: function () {
+                return $(this).closest('.edit-vehicle-form').find('[name="edit_vehicle_type"]').val() === 'tempo';
+              }
+            }
+          }
+        },
+
+        messages: {
+          edit_vehicle_name: { required: "Enter vehicle name", minlength: "Min 3 characters" },
+          edit_vehicle_model: { required: "Enter model", minlength: "Min 2 characters" },
+          edit_vehicle_number: { required: "Enter number", minlength: "Min 4 characters" },
+          edit_vehicle_color: "Enter color",
+          edit_vehicle_year: {
+            required: "Enter year",
+            number: "Must be a number",
+            min: "Too old",
+            max: "Too futuristic"
+          },
+          edit_vehicle_fuel: "Enter fuel type",
+          edit_vehicle_mileage: {
+            required: "Enter mileage",
+            number: "Must be a number",
+            min: "Minimum 1"
+          },
+          edit_vehicle_transmission: "Enter transmission",
+          edit_vehicle_engine: "Enter engine",
+          edit_vehicle_type: "Select vehicle type",
+          edit_vehicle_description: {
+            required: "Enter description",
+            minlength: "Min 10 characters"
+          },
+
+          edit_vehicle_seats: "Enter seat count for car",
+          edit_vehicle_doors: "Enter door count for car",
+          edit_vehicle_airbags: "Enter airbag count for car",
+          edit_vehicle_brake_type: "Enter brake type for bike",
+          edit_vehicle_start_type: "Enter start type for bike",
+          edit_vehicle_weight: "Enter weight for bike",
+          edit_tempo_seats: "Enter seat count for tempo",
+          edit_tempo_doors: "Enter door count for tempo",
+          edit_vehicle_capacity: "Enter capacity for tempo"
+        },
+
+        errorPlacement: function (error, element) {
+          error.addClass("text-danger");
+          error.insertAfter(element);
+        },
+        highlight: function (element) {
+          $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+          $(element).removeClass("is-invalid");
         }
       });
-      {% endfor %}
     });
-  </script>
+  });
+</script>
 
+<!--Delete script-->
+<script>
+  $(document).ready(function () {
+    // Toggle all checkboxes when "Select All" is clicked
+    $("#selectAll").click(function () {
+      $(".vehicle-checkbox").prop('checked', this.checked);
+      toggleDeleteButton();
+    });
   
+    // When any individual checkbox is clicked
+    $(".vehicle-checkbox").on("change", function () {
+      let total = $(".vehicle-checkbox").length;
+      let checked = $(".vehicle-checkbox:checked").length;
+  
+      
+      $("#selectAll").prop("checked", total === checked);
+  
+      
+      toggleDeleteButton();
+    });
+  
+   
+    function toggleDeleteButton() {
+      const selected = $(".vehicle-checkbox:checked").length;
+      if (selected > 1) {
+        $("#deleteSelectedBtn").removeClass('d-none');
+      } else {
+        $("#deleteSelectedBtn").addClass('d-none');
+      }
+    }
+  $("#deleteSelectedBtn").click(function () {
+      const selectedIds = $(".vehicle-checkbox:checked").map(function () {
+        return $(this).val();
+      }).get().join(",");
+      $("#selectedDriverIds").val(selectedIds);
+    });
+  });
+  
+</script>
+
 {% endblock scripts %}
