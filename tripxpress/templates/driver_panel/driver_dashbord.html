@@ -1,2 +1,137 @@
 {% extends "driver_panel/base.html" %}
 
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 ">Dashboard</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+  
+        <!-- Assigned Trips -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>3</h3>
+              <p>Assigned Trips</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-route"></i>
+            </div>
+            <a href="#" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+        <!-- Upcoming Trips -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>2</h3>
+              <p>Upcoming Trips</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <a href="#" class="small-box-footer">See Schedule <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+        <!-- Completed Trips -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-primary">
+            <div class="inner">
+              <h3>12</h3>
+              <p>Completed Trips</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <a href="#" class="small-box-footer">View History <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+        <!-- Earnings -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3>₹1500</h3>
+              <p>This Month's Earnings</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+        <!-- Vehicle Info -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-secondary">
+            <div class="inner">
+              <h3>Car</h3>
+              <p>Vehicle Assigned</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-car"></i>
+            </div>
+            <a href="#" class="small-box-footer">View Vehicle <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+        <!-- Availability -->
+        <div class="col-md-4 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>Available</h3>
+              <p>Status</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <a href="#" class="small-box-footer">Update Status <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+  
+
+{% endblock content %}
+
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+{% endblock scripts %}

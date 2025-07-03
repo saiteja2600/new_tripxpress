@@ -36,6 +36,9 @@
    {% comment %} Icon {% endcomment %}
      <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" type="image/x-icon">
      <link rel="stylesheet" href="{% static 'styles/admin_css/style.css' %}">
+     <link rel="stylesheet" href="{% static 'styles/driver_css/style.css' %}">
+    <!--Cropper Js-->
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
@@ -64,7 +67,7 @@
                 <span class="badge badge-warning navbar-badge ml-1">3</span> <!-- Notification badge -->
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow">
-                <span class="dropdown-item-text small text-muted">driver@example.com</span>
+                <span class="dropdown-item-text small text-muted">{{request.session.driver_company_email}}</span>
                 <div class="dropdown-divider"></div>
                 <a href="#" class="dropdown-item">
                   <i class="fas fa-bell mr-2"></i> Notifications (3)
@@ -73,7 +76,7 @@
                     <i class="fas fa-envelope mr-2"></i> Messages (4)
                 </a>
                 
-                <a href="#" class="dropdown-item">
+                <a href="{% url 'driver_profile' %}" class="dropdown-item">
                   <i class="fas fa-user mr-2"></i> Profile
                 </a>
                 <div class="dropdown-divider"></div>
@@ -97,10 +100,21 @@
           <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
               <div class="image">
-                <i class="fas fa-user-circle fa-2x text-white"></i>
-              </div>
+                {% if request.session.driver_profile %}
+                    <img src="{{ request.session.driver_profile }}" class="profile-pic" alt="Profile Image" style="width:35px; height:35px;">
+                {% else %}
+                    {% if request.session.driver_name %}
+                        <div class="initials">
+                            {{ request.session.driver_name }}
+                        </div>
+                    {% else %}
+                        <i class="fas fa-user-circle fa-2x text-white"></i>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
               <div class="info">
-                <a href="#" class="d-block">driver@example.com</a>
+                <a href="#" class="d-block">{{request.session.driver_company_email}}</a>
               </div>
             </div>
       
@@ -140,6 +154,36 @@
                     <p>My Schedule</p>
                   </a>
                 </li>
+                <li class="nav-item has-treeview">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-tools"></i>
+                    <p>
+                      Work Center
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Apply for Leave</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'vehicle_information' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Vehicle Information</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'vehicle_maintenance' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Vehicle Maintenance</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                
       
                 <li class="nav-item has-treeview">
                   <a href="#" class="nav-link">
@@ -156,8 +200,21 @@
                         <p>Change Password</p>
                       </a>
                     </li>
+                    <li class="nav-item">
+                      <a href="" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Update Profile</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'driver_logout' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Logout</p>
+                      </a>
+                    </li>
                   </ul>
                 </li>
+                
                 
               </ul>
             </nav>
@@ -223,5 +280,16 @@
 <script src="{% static 'assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
 <script src="{% static 'assets/plugins/summernote/summernote-bs4.min.js' %}"></script>
 <script src="{% static 'assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+
+<!--Cropper Js-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+  $(function () {
+    bsCustomFileInput.init();
+  });
+  </script>
+{% block scripts %}{% endblock scripts %}
 </body>
 </html>
