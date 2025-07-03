@@ -71,7 +71,8 @@
                                                 {% elif vehicle.status == 'On Leave' %}badge-warning
                                                 {% elif vehicle.status == 'Suspended' %}badge-danger
                                                 {% elif vehicle.status == 'Retired' %}badge-secondary
-                                                {% else %}badge-light{% endif %}">
+
+                                                {% else %}badge-info{% endif %}">
                                                 {{ vehicle.status }}
                                             </span>
                                         </td>

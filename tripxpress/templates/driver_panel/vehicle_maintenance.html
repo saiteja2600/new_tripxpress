@@ -1,0 +1,245 @@
+{% extends "driver_panel/base.html" %}
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+      <div class="row mb-2">
+          <div class="col-sm-6">
+              <h1 class="m-0 ">Vehicle Maintenance</h1>
+          </div>
+          <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="{% url 'driver_dashbord' %}">Home</a></li>
+                  <li class="breadcrumb-item active">Vehicle Maintenance</li>
+              </ol>
+          </div>
+      </div>
+  </div>
+</div>
+<section class="content">
+<div class="container-fluid">
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-success mb-2" data-toggle="modal" data-target="#maintenanceModal">
+        <i class="fas fa-plus"></i> Add Maintenance
+      </button>
+    </div>
+
+    <!-- ===== Vehicle Details with Full Image ===== -->
+    <div class="card mb-4 shadow text-center">
+        <div class="card-header bg-info text-white">
+            <h5>{{ vehicle.vehicle_name }} ({{ vehicle.vehicle_model }})</h5>
+        </div>
+        <div class="card-body">
+          <div class="row justify-content-center align-items-center">
+            <div class="col-md-4 text-center mb-3">
+              {% if vehicle.vehicle_image %}
+                <img src="{{ vehicle.vehicle_image.url }}" class="img-fluid rounded shadow" style="max-height: 220px;" alt="Vehicle Image">
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <table class="table table-sm table-borderless">
+                <tr><th>Number:</th><td>{{ vehicle.vehicle_number }}</td></tr>
+                <tr><th>Fuel:</th><td>{{ vehicle.vehicle_fuel }}</td></tr>
+                <tr><th>Transmission:</th><td>{{ vehicle.vehicle_transmission }}</td></tr>
+                <tr><th>Status:</th><td><span class="badge badge-primary">{{ vehicle.status }}</span></td></tr>
+              </table>
+             
+            </div>
+          </div>
+        </div>
+        
+    </div>
+
+    <!-- ===== Modal to Add Maintenance ===== -->
+    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+              <h5 class="modal-title">Add Maintenance</h5>
+              <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Service Type</label>
+                  <select name="service_type" class="form-control" required>
+                    <option value="" selected disabled>Select Service Type</option>
+                    <option value="Oil Change">Oil Change</option>
+                    <option value="Tyre Replacement">Tyre Replacement</option>
+                    <option value="Brake Service">Brake Service</option>
+                    <option value="General Service">General Service</option>
+                    <option value="Battery Check">Battery Check</option>
+                    <option value="Engine Work">Engine Work</option>
+                    <option value="Tire Rotation">Tire Rotation</option>
+                    <option value="Transmission Service">Transmission Service</option>
+                    <option value="Air Filter Replacement">Air Filter Replacement</option>
+                    <option value="Coolant Flush">Coolant Flush</option>
+                    <option value="Radiator Flush">Radiator Flush</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Service Date</label>
+                  <input type="date" name="service_date" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Odometer Reading (km)</label>
+                  <input type="number" name="odometer_reading" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Cost (₹)</label>
+                  <input type="number" name="cost" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Next Service Date</label>
+                  <input type="date" name="next_service_due_date" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Status</label>
+                  <select name="status" class="form-control" required>
+                    <option value="" selected disabled>Select Status</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-12">
+                  <label>Notes</label>
+                  <textarea name="notes" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group col-md-12">
+                  <label>Upload Document</label>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="document">
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success">Save</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== Maintenance History Table ===== -->
+    <div class="card shadow">
+        <div class="card-header">
+            <strong>Maintenance History</strong>
+        </div>
+        <div class="card-body table-responsive">
+            {% if maintenance_records %}
+            <table class="table table-bordered table-sm text-center">
+              <thead class="thead-light">
+                  <tr>
+                      <th style="width: 10%;">Date</th>
+                      <th style="width: 15%;">Service</th>
+                      <th style="width: 10%;">Odometer</th>
+                      <th style="width: 10%;">Cost</th>
+                      <th style="width: 10%;">Status</th>
+                      <th style="width: 10%;">Next Due</th>
+                      <th style="width: 15%;">Document</th>
+                      <th style="width: 10%;">Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for r in maintenance_records %}
+                  <tr>
+                      <td>{{ r.service_date }}</td>
+                      <td>{{ r.service_type }}</td>
+                      <td>{{ r.odometer_reading }} km</td>
+                      <td>₹{{ r.cost }}</td>
+                      <td>
+                          <span class="badge 
+                              {% if r.status == 'Completed' %}badge-success
+                              {% elif r.status == 'In Progress' %}badge-warning
+                              {% elif r.status == 'Scheduled' %}badge-info
+                              {% else %}badge-secondary{% endif %}">
+                              {{ r.status }}
+                          </span>
+                      </td>
+                      <td>{{ r.next_service_due_date|default:"—" }}</td>
+                      <td>
+                          {% if r.document %}
+                              <a href="{{ r.document.url }}" class="btn btn-outline-info btn-sm" target="_blank">View</a>
+                          {% else %}
+                              —
+                          {% endif %}
+                      </td>
+                      <td>
+                          <a href="" class="btn btn-sm btn-primary">
+                              <i class="fas fa-edit"></i> 
+                          </a>
+                          <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal{{ r.service_id }}">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                          
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+          
+            {% else %}
+                <p class="text-center text-muted">No maintenance records yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% for vm in maintenance_records %}
+<div class="modal fade" id="deleteModal{{ vm.service_id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ vm.service_id }}" aria-hidden="true">
+  <div class="modal-dialog modal-center" role="document">
+    <form method="POST" action="{% url 'delete_maintenance' vm.service_id %}">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteModalLabel{{ vm.service_id }}">Confirm Deletion</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete the maintenance record for <strong>{{ vm.service_type }}</strong> on <strong>{{ vm.service_date }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
+</section>
+{% endblock %}
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+{% endblock scripts %}
