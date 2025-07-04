@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/drivers/delete-multiple/', views.admin_delete_multiple_drivers, name='admin_delete_multiple_drivers'),
     path('Driver/edit/<int:driver_id>/', views.admin_driver_edit, name='admin_driver_edit'),
     path('Driver/export/', views.admin_driver_export, name='admin_driver_export'),
+    path('Driver/approver_leaves', views.driver_approver_leaves, name='driver_approver_leaves'),
     #Vehicle
     path('Vehicle/', views.admin_vehicle, name='admin_vehicles'),
     path('Vehicle/edit/<int:vehicle_id>/', views.admin_vehicle_edit, name='admin_vehicle_edit'),

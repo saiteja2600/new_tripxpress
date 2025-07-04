@@ -89,7 +89,7 @@
         </nav>
       
         <aside class="main-sidebar sidebar-dark-priamry elevation-5">
-          <a href="#" class="brand-link tripxpress-brand">
+          <a href="{% url 'driver_dashbord' %}" class="brand-link tripxpress-brand">
             <img src="/static/images/ticket_logo.png" alt="TripXpress Logo" class="brand-image img-circle elevation-3">
             <div class="brand-text-wrapper">
               <span class="brand-text">Trip<span class="highlight">Xpress</span></span>
@@ -101,18 +101,13 @@
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
               <div class="image">
                 {% if request.session.driver_profile %}
-                    <img src="{{ request.session.driver_profile }}" class="profile-pic" alt="Profile Image" style="width:35px; height:35px;">
-                {% else %}
-                    {% if request.session.driver_name %}
-                        <div class="initials">
-                            {{ request.session.driver_name }}
-                        </div>
-                    {% else %}
-                        <i class="fas fa-user-circle fa-2x text-white"></i>
-                    {% endif %}
-                {% endif %}
-            </div>
-            
+                <img src="{{ request.session.driver_profile}}" class="img-circle elevation-2" alt="Admin Image" style="width:35px; height:35px;">
+              {% else %}
+                <span class="avatar-initials">
+                  {{ request.session.driver_name|default:"AD" }}
+                </span>
+              {% endif %}
+              </div>
               <div class="info">
                 <a href="#" class="d-block">{{request.session.driver_company_email}}</a>
               </div>
@@ -121,7 +116,7 @@
             <nav class="mt-2">
               <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="{% url 'driver_dashbord' %}" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt text-cyan"></i>
                     <p>Dashboard</p>
                   </a>
@@ -164,7 +159,7 @@
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="" class="nav-link">
+                      <a href="{% url 'driver_leaves'%}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Apply for Leave</p>
                       </a>

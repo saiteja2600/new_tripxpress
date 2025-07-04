@@ -76,6 +76,8 @@ class Driver(models.Model):
     STATUS_CHOICES = [
         ('Available', 'Available'),
         ('Not Available', 'Not Available'),
+        ('Leave', 'Leave'),
+        
     ]
     VEHICLE_LINK_CHOICES = [
         ('own', 'Own Vehicle'),
@@ -99,7 +101,7 @@ class Driver(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
-    profile_image = models.ImageField(upload_to='driver_images/', blank=True, null=True)
+    driver_profile_image = models.ImageField(upload_to='driver_images/', blank=True, null=True)
     vehicle_link = models.CharField(max_length=10, choices=VEHICLE_LINK_CHOICES, default='none')
     driving_licence = models.CharField(max_length=100, blank=True, null=True)
     vehicle_driver_type = MultiSelectField(choices=VEHICLE_DRIVER_TYPE, max_length=10, blank=True)

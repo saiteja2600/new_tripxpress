@@ -1,0 +1,146 @@
+{% extends "admin_panel/base.html" %}
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 ">Leaves</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'driver_dashbord' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Leaves</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+
+    <div class="container-fluid mt-4">
+     
+      <div class="card shadow mb-4">
+        <div class="card-header">
+            <h3 class="mb-0 ">Driver Leave Requests</h3>
+        </div>
+        <div class="card-body">
+            {% if leaves %}
+            <table class="table table-bordered table-striped text-center table-md  table-hover" id="example2">
+              <thead class="thead-dark text-white text-center">
+                <tr>
+                  <th>Driver</th>
+                  <th>Days</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for leave in leaves %}
+                <tr>
+                  <td>{{ leave.driver.first_name }} {{ leave.driver.last_name}}</td>
+                  <td>{{ leave.leave_days }}</td>
+                  <td>{{ leave.start_date }}</td>
+                  <td>{{ leave.end_date }}</td>
+                  <td>
+                    <span class="badge 
+                      {% if leave.status == 'Pending' %}badge-warning
+                      {% elif leave.status == 'Approved' %}badge-success
+                      {% else %}badge-danger{% endif %}">
+                      {{ leave.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#leaveModal{{ leave.leave_id }}">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+          
+                <!-- Modal -->
+                <div class="modal fade" id="leaveModal{{ leave.leave_id }}" tabindex="-1" role="dialog" aria-labelledby="leaveModalLabel{{ leave.leave_id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <form method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="leave_id" value="{{ leave.leave_id }}">
+                      <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                          <h5 class="modal-title" id="leaveModalLabel{{ leave.leave_id }}">Leave Request: {{ leave.driver.first_name }} {{ leave.driver.last_name}}</h5>
+                          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <p><strong>Driver Name:</strong> {{ leave.driver.first_name }} {{ leave.driver.last_name}}</p>
+                              <p><strong>Email:</strong> {{ leave.driver.email }}</p>
+                              <p><strong>Phone:</strong> {{ leave.driver.phone_number }}</p>
+                            </div>
+                            <div class="col-md-6">
+                              <p><strong>Start Date:</strong> {{ leave.start_date }}</p>
+                              <p><strong>End Date:</strong> {{ leave.end_date }}</p>
+                              <p><strong>Status:</strong> 
+                                {% if leave.status == 'Pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                                {% elif leave.status == 'Approved' %}
+                                <span class="badge badge-success">Approved</span>
+                                {% else %}
+                                <span class="badge badge-danger">Rejected</span>
+                                {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                              <p><strong>Reason:</strong> {{ leave.reason }}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          {% if leave.status == 'Pending' %}
+                          <button type="submit" name="action" value="Approve" class="btn btn-success">
+                             Approve</button>
+                          <button type="submit" name="action" value="Reject" class="btn btn-danger">
+                          Reject</button>
+                          
+                          {% endif %}
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+      </div>
+     
+      {% else %}
+      <p class="text-muted text-center">No leave requests found.</p>
+      {% endif %}
+    </div>
+    {% endblock %}
+</section>
+
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock %}

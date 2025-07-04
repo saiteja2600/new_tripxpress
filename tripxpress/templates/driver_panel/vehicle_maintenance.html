@@ -51,8 +51,8 @@
 
     <!-- ===== Modal to Add Maintenance ===== -->
     <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <form method="POST" enctype="multipart/form-data">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <form method="POST" enctype="multipart/form-data" id="maintenanceForm">
           {% csrf_token %}
           <div class="modal-content">
             <div class="modal-header bg-info text-white">
@@ -94,7 +94,7 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label>Next Service Date</label>
-                  <input type="date" name="next_service_due_date" class="form-control">
+                  <input type="text" name="next_service_due_date" class="form-control" disabled>
                 </div>
                 <div class="form-group col-md-6">
                   <label>Status</label>
@@ -173,9 +173,9 @@
                           {% endif %}
                       </td>
                       <td>
-                          <a href="" class="btn btn-sm btn-primary">
-                              <i class="fas fa-edit"></i> 
-                          </a>
+                          <button type="button" class="btn btn-sm btn-outline-warning" data-toggle="modal" data-target="#editmodel{{ r.service_id }}">
+                            <i class="fas fa-edit"></i>
+                          </button>
                           <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal{{ r.service_id }}">
                             <i class="fas fa-trash"></i>
                           </button>
@@ -193,8 +193,107 @@
     </div>
 </div>
 {% for vm in maintenance_records %}
+<div class="modal fade" id="editmodel{{ vm.service_id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ vm.service_id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <form method="POST" action="{% url 'edit_maintenance' vm.service_id %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="editModalLabel{{ vm.service_id }}">Edit Maintenance</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Service Type</label>
+              <select name="edit_service_type" class="form-control" required>
+                <option value="">-- Select Service Type --</option>
+                <option value="Oil Change" {% if vm.service_type == 'Oil Change' %}selected{% endif %}>Oil Change</option>
+                <option value="Brake Inspection" {% if vm.service_type == 'Brake Inspection' %}selected{% endif %}>Brake Inspection</option>
+                <option value="Tire Rotation" {% if vm.service_type == 'Tire Rotation' %}selected{% endif %}>Tire Rotation</option>
+                <option value="Battery Check" {% if vm.service_type == 'Battery Check' %}selected{% endif %}>Battery Check</option>
+                <option value="Engine Work" {% if vm.service_type == 'Engine Work' %}selected{% endif %}>Engine Work</option>
+                <option value="Transmission Service" {% if vm.service_type == 'Transmission Service' %}selected{% endif %}>Transmission Service</option>
+                <option value="Air Filter Replacement" {% if vm.service_type == 'Air Filter Replacement' %}selected{% endif %}>Air Filter Replacement</option>
+
+              </select>
+              
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Service Date</label>
+              <input type="date" name="edit_service_date" class="form-control" value="{{ vm.service_date|date:'Y-m-d' }}" required>
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Odometer Reading (km)</label>
+              <input type="number" name="edit_odometer_reading" class="form-control" value="{{ vm.odometer_reading }}" required>
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Cost (₹)</label>
+              <input type="number" name="edit_cost" class="form-control" value="{{ vm.cost }}" required>
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Next Service Date</label>
+              <input type="date" name="edit_next_service_due_date" class="form-control" value="{{ vm.next_service_due_date|date:'Y-m-d' }}">
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Status</label>
+              <select name="edit_status" class="form-control" required>
+                <option value="" disabled>Select Status</option>
+                <option value="Scheduled" {% if vm.status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="In Progress" {% if vm.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Completed" {% if vm.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if vm.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+               
+              </select>
+            </div>
+
+            <div class="form-group col-md-12">
+              <label>Notes</label>
+              <textarea name="edit_notes" class="form-control" rows="3">{{ vm.notes }}</textarea>
+            </div>
+
+            <div class="form-group col-md-12">
+              <label>Replace Document (Optional)</label>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" name="edit_document" id="document_{{ vm.service_id }}">
+                <label class="custom-file-label" for="document_{{ vm.service_id }}" id="label_document_{{ vm.service_id }}">
+                  {% if vm.document %}
+                    {{ vm.document.name|slice:"14:" }}  {# Remove 'maintenance_docs/' prefix #}
+                  {% else %}
+                    Choose file
+                  {% endif %}
+                </label>
+              </div>
+              {% if vm.document %}
+              <small class="form-text text-muted mt-1">
+                Current: <a href="{{ vm.document.url }}" target="_blank">View Document</a>
+              </small>
+              {% endif %}
+            </div>
+            
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Update</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
+{% for vm in maintenance_records %}
 <div class="modal fade" id="deleteModal{{ vm.service_id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ vm.service_id }}" aria-hidden="true">
-  <div class="modal-dialog modal-center" role="document">
+  <div class="modal-dialog  modal-dialog-centered" role="document">
     <form method="POST" action="{% url 'delete_maintenance' vm.service_id %}">
       {% csrf_token %}
       <div class="modal-content">
@@ -241,5 +340,107 @@
   {% endfor %}
 </script>
 {% endif %}
+<script>
+  $(document).ready(function() {
+
+    // Disable past dates for service_date
+    var today = new Date().toISOString().split('T')[0];
+    $("input[name='service_date']").attr('min', today);
+
+    $('#maintenanceForm').validate({
+      rules: {
+        service_type: {
+          required: true
+        },
+        service_date: {
+          required: true
+        },
+        odometer_reading: {
+          required: true
+        },
+        cost: {
+          required: true
+        }
+      },
+      messages: {
+        service_type: {
+          required: "Please select a service type."
+        },
+        service_date: {
+          required: "Please select a service date."
+        },
+        odometer_reading: {
+          required: "Please enter the odometer reading."
+        },
+        cost: {
+          required: "Please enter the cost."
+        }
+      },
+      errorClass: "text-danger",
+      errorElement: "span",
+      highlight: function (element) {
+        $(element).addClass("is-invalid");
+      },
+      unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const serviceDateInput = document.querySelector('input[name="service_date"]');
+    const nextServiceDateInput = document.querySelector('input[name="next_service_due_date"]');
+
+    serviceDateInput.addEventListener('change', function () {
+      const selectedDate = new Date(this.value);
+      if (!isNaN(selectedDate)) {
+        // Add 1 month to the selected date
+        const nextMonthDate = new Date(selectedDate);
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+
+        // Handle end-of-month edge cases
+        if (nextMonthDate.getDate() !== selectedDate.getDate()) {
+          nextMonthDate.setDate(0);  // Sets to last day of previous month
+        }
+
+        // Format as yyyy-mm-dd
+        const year = nextMonthDate.getFullYear();
+        const month = String(nextMonthDate.getMonth() + 1).padStart(2, '0');
+        const day = String(nextMonthDate.getDate()).padStart(2, '0');
+        nextServiceDateInput.value = `${month}/${day}/${year}`;
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[id^="editmodel"]').forEach(function(modal) {
+      const serviceDateInput = modal.querySelector('input[name="edit_service_date"]');
+      const nextServiceDateInput = modal.querySelector('input[name="edit_next_service_due_date"]');
+
+      if (serviceDateInput && nextServiceDateInput) {
+        serviceDateInput.addEventListener('change', function () {
+          const selectedDate = new Date(this.value);
+          if (!isNaN(selectedDate)) {
+            const nextMonthDate = new Date(selectedDate);
+            nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+            if (nextMonthDate.getDate() !== selectedDate.getDate()) {
+              nextMonthDate.setDate(0);
+            }
+
+            const day = String(nextMonthDate.getDate()).padStart(2, '0');
+            const month = String(nextMonthDate.getMonth() + 1).padStart(2, '0');
+            const year = nextMonthDate.getFullYear();
+            nextServiceDateInput.value = `${year}-${month}-${day}`;  // For <input type="date">
+          }
+        });
+      }
+    });
+  });
+</script>
+
 
 {% endblock scripts %}
