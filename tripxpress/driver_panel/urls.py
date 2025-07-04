@@ -12,6 +12,10 @@ urlpatterns = [
     path('vehicle_information/', views.vehicle_information, name='vehicle_information'),
     path('vehicle_maintenance/', views.vehicle_maintenance, name='vehicle_maintenance'),
    path('Driver/vehicle_maintenance/delete/<int:service_id>/', views.vehicle_maintenance_delete, name='delete_maintenance'),
+   path('Driver/vehicle_maintenance/edit/<int:service_id>/', views.vehicle_maintenance_edit, name='edit_maintenance'),
+   
+   #Leaves
+   path('driver_leaves/', views.driver_leaves, name='driver_leaves')
 
 ]
 

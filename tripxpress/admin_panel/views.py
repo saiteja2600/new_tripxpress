@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from admin_panel.models import admin_Register, Branch, City, Country, State,Driver,company_vehicle
+from driver_panel.models import VehicleMaintenance,leave_request
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
 from django.views.decorators.cache import never_cache
@@ -459,6 +460,25 @@ def admin_driver_export(request):
         return redirect('admin_drivers')
 
     return redirect('admin_drivers')
+@never_cache
+def driver_approver_leaves(request):
+    if request.method == 'POST':
+        leave_id = request.POST.get('leave_id')
+        action = request.POST.get('action')  # 'Approve' or 'Reject'
+
+        leave = get_object_or_404(leave_request, pk=leave_id)
+
+        if action == 'Approve':
+            leave.status = 'Approved'
+        elif action == 'Reject':
+            leave.status = 'Rejected'
+        leave.save()
+        messages.success(request, f"Leave {action.lower()}ed successfully.")
+
+        return redirect('driver_approver_leaves')
+
+    leaves = leave_request.objects.all().order_by('-created_at')
+    return render(request, 'admin_panel/driver_approver_leaves.html', {'leaves': leaves})
 @never_cache
 def admin_vehicle(request):
     if 'admin_id' not in request.session:
