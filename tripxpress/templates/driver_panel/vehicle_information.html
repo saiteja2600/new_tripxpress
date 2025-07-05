@@ -14,9 +14,9 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
   
-  <section class="content">
+<section class="content">
 <div class="container-fluid">
     
     {% if vehicle %}
@@ -34,49 +34,263 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title">{{ v.vehicle_name }} ({{ v.vehicle_model }})</h5>
-                        <table class="table table-sm table-borderless">
-                            <tr><th scope="row">Number:</th><td>{{ v.vehicle_number }}</td></tr>
-                            <tr><th scope="row">Type:</th><td>{{ v.vehicle_type }}</td></tr>
-                            <tr><th scope="row">Fuel:</th><td>{{ v.vehicle_fuel }}</td></tr>
-                            <tr><th scope="row">Transmission:</th><td>{{ v.vehicle_transmission }}</td></tr>
-                            <tr><th scope="row">Mileage:</th><td>{{ v.vehicle_mileage }}</td></tr>
-                           
-                            {# Car-specific fields #}
-                            {% if "car" in v.vehicle_type|lower %}
-                                <tr><th scope="row">Airbags:</th><td>{{ v.vehicle_airbags }}</td></tr>
-                                <tr><th scope="row">Seats:</th><td>{{ v.vehicle_seats }}</td></tr>
-                                <tr><th scope="row">Doors:</th><td>{{ v.vehicle_doors }}</td></tr>
-                            {% endif %}
-
-                            {# Bike-specific fields #}
-                            {% if "bike" in v.vehicle_type|lower %}
-                                <tr><th scope="row">Brake Type:</th><td>{{ v.vehicle_brake_type }}</td></tr>
-                                <tr><th scope="row">Start Type:</th><td>{{ v.vehicle_start_type }}</td></tr>
-                                <tr><th scope="row">Weight:</th><td>{{ v.vehicle_weight }} kg</td></tr>
-                            {% endif %}
-
-                            {# Tempo-specific fields #}
-                            {% if "tempo" in v.vehicle_type|lower %}
-                                <tr><th scope="row">Tempo Seats:</th><td>{{ v.tempo_seats }}</td></tr>
-                                <tr><th scope="row">Tempo Doors:</th><td>{{ v.tempo_doors }}</td></tr>
-                                <tr><th scope="row">Capacity:</th><td>{{ v.vehicle_capacity }}</td></tr>
-                            {% endif %}
+                        <h5 class="card-title mb-3">{{ v.vehicle_name }} ({{ v.vehicle_model }})</h5>
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Vehicle Number</th>
+                                    <td>{{ v.vehicle_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Vehicle Type</th>
+                                    <td>{{ v.vehicle_type }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Fuel Type</th>
+                                    <td>{{ v.vehicle_fuel }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Transmission</th>
+                                    <td>{{ v.vehicle_transmission }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Engine</th>
+                                    <td>{{ v.vehicle_engine }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Mileage</th>
+                                    <td>{{ v.vehicle_mileage }}</td>
+                                </tr>
+                        
+                                {% if "car" in v.vehicle_type|lower %}
+                                <tr>
+                                    <th scope="row">Seats</th>
+                                    <td>{{ v.vehicle_seats }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Doors</th>
+                                    <td>{{ v.vehicle_doors }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Airbags</th>
+                                    <td>{{ v.vehicle_airbags }}</td>
+                                </tr>
+                                {% endif %}
+                        
+                                {% if "bike" in v.vehicle_type|lower %}
+                                <tr>
+                                    <th scope="row">Brake Type</th>
+                                    <td>{{ v.vehicle_brake_type }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Start Type</th>
+                                    <td>{{ v.vehicle_start_type }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Weight</th>
+                                    <td>{{ v.vehicle_weight }} kg</td>
+                                </tr>
+                                {% endif %}
+                        
+                                {% if "tempo" in v.vehicle_type|lower %}
+                                <tr>
+                                    <th scope="row">Tempo Seats</th>
+                                    <td>{{ v.tempo_seats }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Tempo Doors</th>
+                                    <td>{{ v.tempo_doors }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Capacity</th>
+                                    <td>{{ v.vehicle_capacity }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
                         </table>
+                        
+                        <div class="text-start mt-3 pr-3 pb-2">
+                            <button class="btn btn-outline-primary" data-toggle="modal" data-target="#editVehicleModal{{ v.vehicle_id }}">
+                                <i class="fas fa-edit"></i> Edit Vehicle
+                              </button>
+                              
+                              
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         {% endfor %}
-    {% else %}
-        <div class="alert alert-info mt-3">
-            {% if driver.vehicle_link == 'own' %}
-                You are using your own vehicle. No company vehicle assigned.
-            {% else %}
-                No company vehicle information available.
-            {% endif %}
-        </div>
+    
     {% endif %}
+   
 </div>
 </section>
+{% for vm in vehicle %}
+<div class="modal fade" id="editVehicleModal{{ vm.vehicle_id }}" tabindex="-1" role="dialog" aria-labelledby="editVehicleModalLabel{{ vm.vehicle_id }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <form method="POST" action="{% url 'admin_vehicle_edit' vm.vehicle_id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="editVehicleModalLabel{{ vm.vehicle_id }}">Edit Vehicle</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" class="vehicle-type" value="{{ vm.vehicle_type|lower }}">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Vehicle Type</label>
+                    <input type="text" class="form-control" value="{{ vm.vehicle_type }}" disabled>
+                  </div>
+              <!-- Basic Info -->
+              <div class="form-group col-md-6">
+                <label>Vehicle Name</label>
+                <input type="text" name="edit_vehicle_name" class="form-control" value="{{ vm.vehicle_name }}" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Vehicle Model</label>
+                <input type="text" name="edit_vehicle_model" class="form-control" value="{{ vm.vehicle_model }}" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Vehicle Number</label>
+                <input type="text" name="edit_vehicle_number" class="form-control" value="{{ vm.vehicle_number }}" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label>Vehicle Color</label>
+                <input type="text" name="edit_vehicle_color" class="form-control" value="{{ vm.vehicle_color }}">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Manufacture Year</label>
+                <input type="text" name="edit_vehicle_year" class="form-control" value="{{ vm.vehicle_year }}">
+              </div>
+  
+              <!-- Vehicle Type Display -->
+              
+  
+              <!-- Specs -->
+              <div class="form-group col-md-6">
+                <label>Fuel</label>
+                <input type="text" name="edit_vehicle_fuel" class="form-control" value="{{ vm.vehicle_fuel }}">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Mileage</label>
+                <input type="text" name="edit_vehicle_mileage" class="form-control" value="{{ vm.vehicle_mileage }}">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Transmission</label>
+                <input type="text" name="edit_vehicle_transmission" class="form-control" value="{{ vm.vehicle_transmission }}">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Engine</label>
+                <input type="text" name="edit_vehicle_engine" class="form-control" value="{{ vm.vehicle_engine }}">
+              </div>
+  
+              <!-- Car Specific -->
+              <div class="form-group col-md-4 car-fields d-none">
+                <label>Seats</label>
+                <input type="text" name="edit_vehicle_seats" class="form-control" value="{{ vm.vehicle_seats }}">
+              </div>
+              <div class="form-group col-md-4 car-fields d-none">
+                <label>Doors</label>
+                <input type="text" name="edit_vehicle_doors" class="form-control" value="{{ vm.vehicle_doors }}">
+              </div>
+              <div class="form-group col-md-4 car-fields d-none">
+                <label>Airbags</label>
+                <input type="text" name="edit_vehicle_airbags" class="form-control" value="{{ vm.vehicle_airbags }}">
+              </div>
+  
+              <!-- Bike Specific -->
+              <div class="form-group col-md-4 bike-fields d-none">
+                <label>Brake Type</label>
+                <input type="text" name="edit_vehicle_brake_type" class="form-control" value="{{ vm.vehicle_brake_type }}">
+              </div>
+              <div class="form-group col-md-4 bike-fields d-none">
+                <label>Start Type</label>
+                <input type="text" name="edit_vehicle_start_type" class="form-control" value="{{ vm.vehicle_start_type }}">
+              </div>
+              <div class="form-group col-md-4 bike-fields d-none">
+                <label>Weight (kg)</label>
+                <input type="text" name="edit_vehicle_weight" class="form-control" value="{{ vm.vehicle_weight }}">
+              </div>
+  
+              <!-- Tempo Specific -->
+              <div class="form-group col-md-4 tempo-fields d-none">
+                <label>Tempo Seats</label>
+                <input type="text" name="edit_tempo_seats" class="form-control" value="{{ vm.tempo_seats }}">
+              </div>
+              <div class="form-group col-md-4 tempo-fields d-none">
+                <label>Tempo Doors</label>
+                <input type="text" name="edit_tempo_doors" class="form-control" value="{{ vm.tempo_doors }}">
+              </div>
+              <div class="form-group col-md-4 tempo-fields d-none">
+                <label>Capacity</label>
+                <input type="text" name="edit_vehicle_capacity" class="form-control" value="{{ vm.vehicle_capacity }}">
+              </div>
+  
+              <!-- Image -->
+              <div class="form-group col-md-12">
+                <label>Replace Image</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" name="edit_vehicle_image" id="editVehicleImage{{ vm.vehicle_id }}">
+                  <label class="custom-file-label" for="editVehicleImage{{ vm.vehicle_id }}">Choose file</label>
+                </div>
+                {% if vm.vehicle_image %}
+                <small class="form-text text-muted mt-1">
+                  Current: <a href="{{ vm.vehicle_image.url }}" target="_blank">View</a>
+                </small>
+                {% endif %}
+              </div>
+  
+              <!-- Description -->
+              <div class="form-group col-md-12">
+                <label>Description</label>
+                <textarea name="edit_vehicle_description" class="form-control">{{ vm.vehicle_description }}</textarea>
+              </div>
+  
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+{% endfor %}
+
 {% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+      $('.modal').on('show.bs.modal', function () {
+        const modal = $(this);
+        const vehicleType = modal.find('.vehicle-type').val();
+  
+        // Hide all type-specific fields first
+        modal.find('.car-fields, .bike-fields, .tempo-fields').addClass('d-none');
+  
+        // Show based on type
+        if (vehicleType.includes('car')) {
+          modal.find('.car-fields').removeClass('d-none');
+        } else if (vehicleType.includes('bike')) {
+          modal.find('.bike-fields').removeClass('d-none');
+        } else if (vehicleType.includes('tempo')) {
+          modal.find('.tempo-fields').removeClass('d-none');
+        }
+      });
+      $('.custom-file-input').on('change', function (e) {
+        var fileName = e.target.files[0]?.name;
+        if (fileName) {
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        }
+    });
+    });
+  </script>
+{% endblock scripts %}
+  

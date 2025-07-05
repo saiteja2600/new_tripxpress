@@ -110,28 +110,38 @@ class Driver(models.Model):
     joined_at = models.DateField(blank=True, null=True) 
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
-
     def save(self, *args, **kwargs):
         if self.date_of_birth:
             today = date.today()
             self.age = (
-                today.year - self.date_of_birth.year -
-                ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+            today.year - self.date_of_birth.year -
+            ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
             )
 
-        # Auto-generate company email if not provided
-        if self._state.adding and self.first_name and self.last_name:
-            if not self.company_email:
-                base_email_name = (self.first_name + self.last_name).replace(' ', '.')
-                company_domain = "tripxpress.com"
-                email_candidate = f"{base_email_name}@{company_domain}"
-                counter = 1
-                while Driver.objects.filter(company_email=email_candidate).exists():
-                    email_candidate = f"{base_email_name}{counter}@{company_domain}"
-                    counter += 1
-                self.company_email = email_candidate
+    # Handle company email generation or update
+        should_update_email = False
+
+        if self.pk:
+        # Instance already exists, check if first or last name changed
+            orig = Driver.objects.get(pk=self.pk)
+            if orig.first_name != self.first_name or orig.last_name != self.last_name:
+                should_update_email = True
+        else:
+        # New instance
+            should_update_email = True
+
+        if should_update_email and self.first_name and self.last_name:
+            base_email_name = (self.first_name + self.last_name).replace(' ', '.').lower()
+            company_domain = "tripxpress.com"
+            email_candidate = f"{base_email_name}@{company_domain}"
+            counter = 1
+            while Driver.objects.exclude(pk=self.pk).filter(company_email=email_candidate).exists():
+                email_candidate = f"{base_email_name}{counter}@{company_domain}"
+                counter += 1
+            self.company_email = email_candidate
 
         super().save(*args, **kwargs)
+
     def clean(self):
         if self.vehicle_link == 'own':
             if not self.vehicles.filter(ownership = 'driver').exists():
@@ -166,7 +176,7 @@ class company_vehicle(models.Model):
     vehicle_fuel = models.CharField(max_length=50)
     vehicle_mileage = models.CharField(max_length=10, blank=True, null=True)
     vehicle_transmission = models.CharField(max_length=50)
-    vehicle_engine = models.CharField(max_length=50)
+    vehicle_engine = models.CharField(max_length=50, blank=True, null=True)
     vehicle_seats = models.CharField(max_length=50, blank=True, null=True)
     vehicle_doors = models.CharField(max_length=50, blank=True, null=True)
 
@@ -199,3 +209,49 @@ class company_vehicle(models.Model):
 
     def __str__(self):
         return f"{self.vehicle_name} - {self.vehicle_number}"
+
+ 
+class locations(models.Model):
+        admin = models.ForeignKey(admin_Register, on_delete=models.CASCADE)
+        location_id = models.AutoField(primary_key=True)
+        location_name = models.CharField(max_length=100, blank=True, null=True)
+        location_country = models.ForeignKey(Country, on_delete=models.CASCADE)
+        location_state = models.ForeignKey(State, on_delete=models.CASCADE)
+        location_city = models.ForeignKey(City, on_delete=models.CASCADE)
+        location_pincode = models.CharField(max_length=10, blank=True, null=True)
+        location_address = models.CharField(max_length=200, blank=True, null=True)
+        location_landmark = models.CharField(max_length=200, blank=True, null=True)
+        location_url = models.URLField(max_length=300, blank=True, null=True, help_text="Optional: Paste a Google Maps link or custom URL")
+        location_image1 = models.ImageField(upload_to='location_images/', blank=True, null=True)
+        location_image2=models.ImageField(upload_to='location_images/', blank=True, null=True)
+        location_image3=models.ImageField(upload_to='location_images/', blank=True, null=True)
+        location_image4=models.ImageField(upload_to='location_images/', blank=True, null=True)
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(null=True, blank=True)
+        def save(self, *args, **kwargs):
+            if self.pk:
+                self.updated_at = timezone.now()
+            super().save(*args, **kwargs)
+        
+        def __str__(self):
+            return self.location_name
+
+
+class Route(models.Model):
+    route_name = models.CharField(max_length=150)
+    from_location = models.ForeignKey(locations, on_delete=models.CASCADE, related_name='route_from')
+    to_location = models.ForeignKey(locations, on_delete=models.CASCADE, related_name='route_to')
+    distance_km = models.DecimalField(max_digits=10, decimal_places=2)
+    estimated_time = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.route_name
+
+        

@@ -20,6 +20,10 @@ urlpatterns = [
     path('Vehicle/edit/<int:vehicle_id>/', views.admin_vehicle_edit, name='admin_vehicle_edit'),
     path('Vehicle/delete/<int:vehicle_id>/', views.admin_vehicle_delete, name='admin_vehicle_delete'),
     path('admin/vehicles/delete-multiple/', views.admin_delete_multiple_vehicles, name='admin_delete_multiple_vehicles'),
+    
+    #loactions
+    path('all_locations/', views.all_locations, name='all_locations'),
+    path('routes/', views.routes, name='routes'),
    
     # Dynamics Branches
     path('get_states/', views.get_states, name='get_states'),

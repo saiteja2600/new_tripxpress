@@ -31,7 +31,7 @@
                                         <img src="{{ request.session.driver_profile }}" class="profile-pic" alt="Profile Image">
                                         {% else %}
                                     <div class="initials">
-                                        {{ request.session.name|default:"AD" }}
+                                        {{ request.session.driver_short_name|default:"AD" }}
                                     </div>
                                     {% endif %}
                                     

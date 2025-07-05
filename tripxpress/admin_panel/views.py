@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
-from admin_panel.models import admin_Register, Branch, City, Country, State,Driver,company_vehicle
+from admin_panel.models import admin_Register, Branch, City, Country, State,Driver,company_vehicle,locations,Route
 from driver_panel.models import VehicleMaintenance,leave_request
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password, check_password
@@ -25,6 +25,7 @@ import os
 import csv
 import requests
 from django.core.files.base import ContentFile
+from collections import defaultdict
 
 
 # ========== AJAX: Dynamic Dropdown Handlers ==========
@@ -193,7 +194,7 @@ def admin_dashbord(request):
     admin = admin_Register.objects.get(admin_id=request.session['admin_id'])
     drivers = Driver.objects.filter(admin=admin).values('joined_at', 'vehicle_link')
 
-    from collections import defaultdict
+    
 
     year_ownership_map = defaultdict(lambda: {'own': 0, 'company': 0})
     all_years = set()
@@ -213,7 +214,9 @@ def admin_dashbord(request):
         'years': json.dumps(sorted_years),
         'counts': json.dumps(own_data),
         'total_drivers': Driver.objects.filter(admin=admin).count(),
-        'total_company_vehicles': company_vehicle.objects.filter(driver__vehicle_link='company', admin=admin).count(),
+        'total_vehicles': company_vehicle.objects.filter(admin=admin).count(),
+        'total_locations': locations.objects.filter(admin=admin).count(),
+        
 
         'ownership_chart': {
             'years': sorted_years,
@@ -564,9 +567,8 @@ def admin_vehicle(request):
     return render(request, 'admin_panel/admin_vehicle.html',context)
 @never_cache
 def admin_vehicle_edit(request, vehicle_id):
-    if 'admin_id' not in request.session:
-        return redirect('admin_login')
-
+    if 'driver_id' not in request.session:
+        return redirect('driver_login')
     if request.method == 'POST':
         try:
             vehicle = company_vehicle.objects.get(vehicle_id=vehicle_id)
@@ -596,7 +598,7 @@ def admin_vehicle_edit(request, vehicle_id):
             vehicle.vehicle_seats = request.POST.get('edit_vehicle_seats')
             vehicle.vehicle_doors = request.POST.get('edit_vehicle_doors')
             vehicle.vehicle_description = request.POST.get('edit_vehicle_description')
-            vehicle.vehicle_type = request.POST.get('edit_vehicle_type')
+            
             vehicle.vehicle_airbags = request.POST.get('edit_vehicle_airbags')
             vehicle.vehicle_brake_type = request.POST.get('edit_vehicle_brake_type')
             vehicle.vehicle_start_type = request.POST.get('edit_vehicle_start_type')
@@ -612,7 +614,7 @@ def admin_vehicle_edit(request, vehicle_id):
             vehicle.save()
 
             messages.success(request, "Vehicle updated successfully.")
-            return redirect('admin_vehicles')
+            return redirect('vehicle_information')
 
         except company_vehicle.DoesNotExist:
             messages.error(request, "Vehicle not found.")
@@ -639,4 +641,73 @@ def admin_delete_multiple_vehicles(request):
     else:
         messages.error(request, "No vehicles selected.")
     return redirect('admin_vehicles')
+@never_cache
+def all_locations(request):
+    if 'admin_id' not in request.session:
+        return redirect('admin_login')
+
+    admin_id = request.session['admin_id']
+    try:
+        admin = admin_Register.objects.get(admin_id=admin_id)
+
+        if request.method == 'POST':
+            location_name = request.POST.get('location_name')
+            location_country = Country.objects.get(id=request.POST.get('location_country'))
+            location_state = State.objects.get(id=request.POST.get('location_state'))
+            location_city = City.objects.get(id=request.POST.get('location_city'))
+            location_pincode = request.POST.get('location_pincode')
+            location_address = request.POST.get('location_address')
+            location_landmark = request.POST.get('location_landmark')
+            location_description = request.POST.get('location_description')  # Optional field
+            location_url = request.POST.get('location_url')
+
+            location_image1 = request.FILES.get('location_image1')
+            location_image2 = request.FILES.get('location_image2')
+            location_image3 = request.FILES.get('location_image3')
+            location_image4 = request.FILES.get('location_image4')
+
+            locations.objects.create(
+                admin=admin,
+                location_name=location_name,
+                location_country=location_country,
+                location_state=location_state,
+                location_city=location_city,
+                location_pincode=location_pincode,
+                location_address=location_address,
+                location_landmark=location_landmark,
+                location_description=location_description,
+                location_url=location_url,
+                location_image1=location_image1,
+                location_image2=location_image2,
+                location_image3=location_image3,
+                location_image4=location_image4,
+            )
+
+            messages.success(request, "Location added successfully.")
+            return redirect('all_locations')
+
+    except admin_Register.DoesNotExist:
+        messages.error(request, "Admin not found.")
+        return redirect('admin_login')
+
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+
+    location = locations.objects.filter(admin=admin).order_by('-location_id')
+    countries = Country.objects.all()
+    states = State.objects.all()
+    cities = City.objects.all()
+
+    context = {
+        'location': location,
+        'countries': countries,
+        'states': states,
+        'cities': cities,
+    }
+
+    return render(request, 'admin_panel/all_locations.html', context)
+
+@never_cache
+def routes(request):
+    return render(request, 'admin_panel/routes.html')
 
