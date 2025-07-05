@@ -1,0 +1,138 @@
+{% extends "admin_panel/base.html" %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">Routes</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Routes</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <div class="container-fluid">
+    <!-- Add Route Button -->
+    <div class="mb-3 d-flex justify-content-end">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addRouteModal">
+        <i class="fas fa-plus"></i> Add Route
+      </button>
+    </div>
+
+    <!-- Routes Table -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover text-center">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Route Name</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Distance (km)</th>
+                  <th>Estimated Time</th>
+                  <th>Created At</th>
+                  <th>Updated At</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for route in routes %}
+                <tr>
+                  <td>{{ route.route_name }}</td>
+                  <td>{{ route.from_location.location_name }}</td>
+                  <td>{{ route.to_location.location_name }}</td>
+                  <td>{{ route.distance_km }}</td>
+                  <td>{{ route.estimated_time }}</td>
+                  <td>{{ route.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ route.updated_at|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    <!-- Edit Button -->
+                    <button type="button" class="btn btn-sm btn-outline-warning mr-2" data-toggle="modal" data-target="#editRouteModal{{ route.id }}">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- Delete Button -->
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteRouteModal{{ route.id }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8">No routes added yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add Route Modal -->
+<div class="modal fade" id="addRouteModal" tabindex="-1" role="dialog" aria-labelledby="addRouteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Add New Route</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Route Name</label>
+              <input type="text" name="route_name" class="form-control" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Distance (km)</label>
+              <input type="number" step="0.01" name="distance_km" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+              <label>Estimated Time</label>
+              <input type="text" name="estimated_time" class="form-control" placeholder="e.g., 2 hrs 30 mins">
+            </div>
+            <div class="form-group col-md-6">
+              <label>From Location</label>
+              <select name="from_location" class="form-control" required>
+                <option value="">-- Select From --</option>
+                {% for loc in locations %}
+                <option value="{{ loc.id }}">{{ loc.location_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label>To Location</label>
+              <select name="to_location" class="form-control" required>
+                <option value="">-- Select To --</option>
+                {% for loc in locations %}
+                <option value="{{ loc.id }}">{{ loc.location_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Route</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

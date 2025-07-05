@@ -1,0 +1,350 @@
+{% extends "driver_panel/base.html" %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Vehicle</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'driver_dashbord' %}">Home</a></li>
+            <li class="breadcrumb-item active">Vehicle</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <form action="" method="POST" enctype="multipart/form-data" id="vehicleForm">
+            {% csrf_token %}
+            <div class="card card-primary">
+              <div class="card-header"><h3 class="card-title">Add Vehicle</h3></div>
+              <div class="card-body row">
+                <div class="form-group col-md-4">
+                    <label>Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ request.session.driver_name }}" disabled>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Email</label>
+                    <input type="text" name="email" class="form-control" value="{{ request.session.driver_company_email }}" disabled>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-control" value="{{ request.session.driver_phone_number }}" disabled>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Country</label>
+                    <input type="text" name="country" class="form-control" value="{{ request.session.driver_country }}" disabled>
+
+                </div>
+                <div class="form-group col-md-4">
+                    <label>State</label>
+                    <input type="text" name="state" class="form-control" value="{{ request.session.driver_state }}" disabled>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>City</label>
+                    <input type="text" name="city" class="form-control" value="{{ request.session.driver_city }}" disabled>
+
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Driving Licence</label>
+                    <input type="text" name="driving_licence" class="form-control" value="{{ request.session.driver_driving_licence }}" disabled>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Driving Licence Type</label>
+                    <input type="text" class="form-control" id="drivingLicenceType" value="{{ request.session.driver_driving_licence_type|join:',' }}" disabled>
+
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Owner Ship</label>
+                    <input type="text" name="owner_ship" class="form-control" value="{{ request.session.driver_ownership }}" disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Vehicle Type</label>
+                    <select name="vehicle_type" class="form-control" id="vehicleType">
+                      <option value="">Select Vehicle Type</option>
+                      <option value="car">Car</option>
+                      <option value="bike">Bike</option>
+                      <option value="tempo">Tempo</option>
+                    </select>
+                  </div>
+                <div class="form-group col-md-3">
+                  <label>Vehicle Name</label>
+                  <input type="text" name="vehicle_name" class="form-control" placeholder="Enter Vehicle Name">
+                </div>
+                <div class="form-group col-md-3">
+                  <label>Vehicle Model</label>
+                  <input type="text" name="vehicle_model" class="form-control" placeholder="Enter Vehicle Model">
+                </div>
+                <div class="form-group col-md-3">
+                  <label>Vehicle Number</label>
+                  <input type="text" name="vehicle_number" class="form-control" placeholder="Enter Vehicle Number">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Engine</label>
+                    <input type="text" name="vehicle_engine" class="form-control" placeholder="Enter Vehicle Engine">
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Milage</label>
+                    <input type="text" name="vehicle_milage" class="form-control" placeholder="Enter Vehicle Milage">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Fuel Type</label>
+                  <input type="text" name="vehicle_fuel" class="form-control" placeholder="Enter Vehicle Fuel">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Transmission</label>
+                  <input type="text" name="vehicle_transmission" class="form-control" placeholder="Enter Vehicle Transmission">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Color</label>
+                  <input type="text" name="vehicle_color" class="form-control" placeholder="Enter Vehicle Color">
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Year</label>
+                  <input type="text" name="vehicle_year" class="form-control" placeholder="Enter Vehicle Year">
+                </div>
+          
+                <!-- Car Fields -->
+                <div class="form-group col-md-4 car-field d-none">
+                  <label>Seats</label>
+                  <input type="text" name="vehicle_seats" class="form-control" placeholder="Enter Vehicle Seats">
+                </div>
+                <div class="form-group col-md-4 car-field d-none">
+                  <label>Doors</label>
+                  <input type="text" name="vehicle_doors" class="form-control" placeholder="Enter Vehicle Doors">
+                </div>
+                <div class="form-group col-md-4 car-field d-none">
+                  <label>Airbags</label>
+                  <input type="text" name="vehicle_airbags" class="form-control" placeholder="Enter Vehicle Airbags">
+                </div>
+          
+                <!-- Bike Fields -->
+                <div class="form-group col-md-4 bike-field d-none">
+                  <label>Brake Type</label>
+                  <input type="text" name="vehicle_brake_type" class="form-control" placeholder="Enter Vehicle Brake Type">
+                </div>
+                <div class="form-group col-md-4 bike-field d-none">
+                  <label>Start Type</label>
+                  <input type="text" name="vehicle_start_type" class="form-control" placeholder="Enter Vehicle Start Type">
+                </div>
+                <div class="form-group col-md-4 bike-field d-none">
+                  <label>Weight</label>
+                  <input type="text" name="vehicle_weight" class="form-control" placeholder="Enter Vehicle Weight">
+                </div>
+          
+                <!-- Tempo Fields -->
+                <div class="form-group col-md-4 tempo-field d-none">
+                  <label>Tempo Seats</label>
+                  <input type="text" name="tempo_seats" class="form-control" placeholder="Enter Tempo Seats">
+                </div>
+                <div class="form-group col-md-4 tempo-field d-none">
+                  <label>Tempo Doors</label>
+                  <input type="text" name="tempo_doors" class="form-control" placeholder="Enter Tempo Doors">
+                </div>
+                <div class="form-group col-md-4 tempo-field d-none">
+                  <label>Capacity</label>
+                  <input type="text" name="vehicle_capacity" class="form-control" placeholder="Enter Capacity">
+                </div>
+                <div class="form-group col-md-12">
+                   
+                    <label>Vehicle Image</label>
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="customFile" name="vehicle_image" accept="image/*">
+                      <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
+                </div>
+          
+                <div class="form-group col-md-12">
+                  <label>Vehicle Description</label>
+                  <textarea name="vehicle_description" class="form-control" placeholder="Enter Vehicle Description" rows="3"></textarea>
+                </div>
+               
+              </div>
+              <div class="card-footer text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </form>
+          
+    </div>
+</section>
+{% endblock content %}
+
+
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+<script>
+    $(document).ready(function () {
+      const licenceType = $('#drivingLicenceType').val().split(',');
+  
+      const vehicleTypeSelect = $('#vehicleType');
+      const allowedTypes = [];
+  
+      // Map license to vehicle types
+      if (licenceType.includes('2')) {
+        allowedTypes.push('bike');
+      }
+      if (licenceType.includes('4')) {
+        allowedTypes.push('car', 'tempo');
+      }
+  
+      // Show only allowed vehicle type options
+      vehicleTypeSelect.find('option').each(function () {
+        const value = $(this).val();
+        if (value && !allowedTypes.includes(value)) {
+          $(this).hide();
+        } else {
+          $(this).show();
+        }
+      });
+  
+      // When vehicle type changes, show corresponding fields
+      vehicleTypeSelect.change(function () {
+        let type = $(this).val();
+        $('.car-field, .bike-field, .tempo-field').addClass('d-none');
+  
+        if (type === 'car') {
+          $('.car-field').removeClass('d-none');
+        } else if (type === 'bike') {
+          $('.bike-field').removeClass('d-none');
+        } else if (type === 'tempo') {
+          $('.tempo-field').removeClass('d-none');
+        }
+      });
+    });
+  </script>
+  <script>
+    $(document).ready(function () {
+        $('#vehicleForm').validate({
+            ignore: [],
+            rules: {
+              vehicle_name: { required: true },
+              vehicle_model: { required: true },
+              vehicle_number: { required: true },
+              vehicle_type: { required: true },
+              vehicle_engine: { required: true },
+              vehicle_milage: { required: true },
+              vehicle_fuel: { required: true },
+              vehicle_transmission: { required: true },
+              vehicle_color: { required: true },
+              vehicle_year: { required: true },
+              vehicle_image: { required: true },
+              vehicle_description: { required: true },
+      
+              // Conditional rules
+              vehicle_seats: {
+                required: function () {
+                  return $('#vehicleType').val() === 'car';
+                }
+              },
+              vehicle_doors: {
+                required: function () {
+                  return $('#vehicleType').val() === 'car';
+                }
+              },
+              vehicle_airbags: {
+                required: function () {
+                  return $('#vehicleType').val() === 'car';
+                }
+              },
+              vehicle_brake_type: {
+                required: function () {
+                  return $('#vehicleType').val() === 'bike';
+                }
+              },
+              vehicle_start_type: {
+                required: function () {
+                  return $('#vehicleType').val() === 'bike';
+                }
+              },
+              vehicle_weight: {
+                required: function () {
+                  return $('#vehicleType').val() === 'bike';
+                }
+              },
+              tempo_seats: {
+                required: function () {
+                  return $('#vehicleType').val() === 'tempo';
+                }
+              },
+              tempo_doors: {
+                required: function () {
+                  return $('#vehicleType').val() === 'tempo';
+                }
+              },
+              vehicle_capacity: {
+                required: function () {
+                  return $('#vehicleType').val() === 'tempo';
+                }
+              }
+            },
+            messages: {
+              vehicle_name: "Please enter vehicle name",
+              vehicle_model: "Please enter vehicle model",
+              vehicle_number: "Please enter vehicle number",
+              vehicle_type: "Please select vehicle type",
+              vehicle_engine: "Please enter vehicle engine",
+              vehicle_milage: "Please enter vehicle milage",
+              vehicle_fuel: "Please enter vehicle fuel",
+              vehicle_transmission: "Please enter vehicle transmission",
+              vehicle_color: "Please enter vehicle color",
+              vehicle_year: "Please enter vehicle year",
+              vehicle_image: "Please upload vehicle image",
+              vehicle_description: "Please enter description",
+      
+              // Optional custom messages for conditional fields
+              vehicle_seats: "Please enter number of seats",
+              vehicle_doors: "Please enter number of doors",
+              vehicle_airbags: "Please enter number of airbags",
+              vehicle_brake_type: "Please enter brake type",
+              vehicle_start_type: "Please enter start type",
+              vehicle_weight: "Please enter weight",
+              tempo_seats: "Please enter tempo seats",
+              tempo_doors: "Please enter tempo doors",
+              vehicle_capacity: "Please enter capacity"
+            },
+            errorElement: 'div',
+            errorClass: 'invalid-feedback',
+            highlight: function (element) {
+              $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+              $(element).removeClass('is-invalid');
+            },
+            errorPlacement: function (error, element) {
+              if (element.parent('.custom-file').length) {
+                error.insertAfter(element.parent());
+              } else {
+                error.insertAfter(element);
+              }
+            }
+          });
+    })
+    
+
+  </script>
+{% endblock %}

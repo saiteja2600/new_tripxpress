@@ -20,8 +20,11 @@ def driver_login(request):
 
             if check_password(password, driver.password):
                 request.session['driver_id'] = driver.driver_id
-                request.session['driver_name'] = f"{driver.first_name[0]}{driver.last_name[0]}".upper()
-
+                request.session['driver_name'] = driver.first_name + ' '+ driver.last_name
+                request.session['driver_short_name']=f"{driver.first_name[0]}{driver.last_name[0]}"
+                request.session['driver_first_name']=driver.first_name
+                request.session['driver_last_name']=driver.last_name
+                request.session['driver_email'] = driver.email
                 request.session['driver_company_email'] = driver.company_email
                 request.session['driver_phone_number'] = driver.phone_number
                 request.session['driver_vehicle_link'] = driver.vehicle_link
@@ -30,6 +33,8 @@ def driver_login(request):
                 request.session['driver_city'] = driver.city.name if driver.city else ''
                 request.session['driver_joined_at'] = str(driver.joined_at)
                 request.session['driver_driving_licence'] = driver.driving_licence
+                request.session['driver_driving_licence_type'] = driver.vehicle_driver_type
+                request.session['driver_ownership'] = driver.vehicle_link
                 if driver.driver_profile_image:
                     request.session['driver_profile'] = driver.driver_profile_image.url
                 else:
@@ -105,9 +110,8 @@ def vehicle_information(request):
 
     driver = Driver.objects.get(driver_id=request.session['driver_id'])
 
-    vehicle = None
-    if driver.vehicle_link == 'company':
-        vehicle = company_vehicle.objects.filter(driver=driver)
+    
+    vehicle = company_vehicle.objects.filter(driver=driver)
 
     return render(request, 'driver_panel/vehicle_information.html', {
         'driver': driver,
@@ -251,3 +255,107 @@ def driver_leaves(request):
     except Driver.DoesNotExist:
         messages.error(request, 'Driver not found.')
         return redirect('driver_login')
+def driver_profile_update(request):
+    if 'driver_id' not in request.session:
+        return redirect('driver_login')
+
+    driver_id = request.session.get('driver_id')
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+        driving_licence = request.POST.get('driving_licence')
+
+        try:
+            driver = Driver.objects.get(driver_id=driver_id)
+            driver.first_name = first_name
+            driver.last_name = last_name
+            driver.phone_number = phone_number
+            driver.driving_licence = driving_licence
+            driver.save()
+
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('driver_profile_update')
+
+        except Driver.DoesNotExist:
+            messages.error(request, 'Driver not found.')
+            return redirect('driver_profile_update')
+
+    # 🛠 GET request — fetch driver and pass to template
+    try:
+        driver = Driver.objects.get(driver_id=driver_id)
+    except Driver.DoesNotExist:
+        messages.error(request, 'Driver not found.')
+        return redirect('driver_login')
+
+    return render(request, 'driver_panel/driver_update_profile.html', {'driver': driver})
+
+
+def vehicles(request):
+    if 'driver_id' not in request.session:
+        return redirect('driver_login')
+    try:
+        if request.method == 'POST':
+           driver_id = request.session['driver_id']
+           driver = Driver.objects.get(driver_id=driver_id)
+           admin = driver.admin
+           vehicle_name = request.POST.get('vehicle_name')
+           vehicle_model = request.POST.get('vehicle_model')
+           vehicle_number = request.POST.get('vehicle_number')
+           vehicle_color = request.POST.get('vehicle_color')
+           vehicle_year = request.POST.get('vehicle_year')
+           vehicle_fuel = request.POST.get('vehicle_fuel')
+           vehicle_mileage = request.POST.get('vehicle_mileage')
+           vehicle_transmission = request.POST.get('vehicle_transmission')
+           vehicle_engine = request.POST.get('vehicle_engine')
+           vehicle_seats = request.POST.get('vehicle_seats')
+           vehicle_doors = request.POST.get('vehicle_doors')
+           vehicle_description = request.POST.get('vehicle_description')
+           vehicle_type = request.POST.get('vehicle_type')
+           vehicle_image = request.FILES.get('vehicle_image')
+           vehicle_airbags = request.POST.get('vehicle_airbags')
+           vehicle_brake_type = request.POST.get('vehicle_brake_type')
+           vehicle_start_type = request.POST.get('vehicle_start_type')
+           vehicle_weight = request.POST.get('vehicle_weight')
+           tempo_seats = request.POST.get('tempo_seats')
+           tempo_doors = request.POST.get('tempo_doors')
+           vehicle_capacity = request.POST.get('vehicle_capacity')
+           if company_vehicle.objects.filter(vehicle_number = vehicle_number).exists():
+               messages.error(request, "Vehicle number already exists.")
+               return redirect('vehicles')
+           
+           
+           company_vehicle.objects.create(
+                admin=admin,
+               driver=driver,
+               vehicle_name=vehicle_name,
+               vehicle_model=vehicle_model,
+               vehicle_number=vehicle_number,
+               vehicle_color=vehicle_color,
+               vehicle_year=vehicle_year,
+               vehicle_fuel=vehicle_fuel,
+               vehicle_mileage=vehicle_mileage,
+               vehicle_transmission=vehicle_transmission,
+               vehicle_engine=vehicle_engine,
+               vehicle_seats=vehicle_seats,
+               vehicle_doors=vehicle_doors,
+               vehicle_description=vehicle_description,
+               vehicle_type=vehicle_type,
+               vehicle_image=vehicle_image,
+               vehicle_airbags=vehicle_airbags,
+               vehicle_brake_type=vehicle_brake_type,
+               vehicle_start_type=vehicle_start_type,
+               vehicle_weight=vehicle_weight,
+               tempo_seats=tempo_seats,
+               tempo_doors=tempo_doors,
+               vehicle_capacity=vehicle_capacity,
+           )
+           messages.success(request, "Vehicle added successfully.")
+           return redirect('vehicles')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {e}")
+        return redirect('vehicles')
+
+    return render(request,'driver_panel/my_vehicle.html')
+

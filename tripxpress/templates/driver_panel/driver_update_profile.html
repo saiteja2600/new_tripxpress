@@ -1,0 +1,135 @@
+{% extends "driver_panel/base.html" %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 ">Profile</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="row no-gutters">
+                        <!-- Left: Profile Image -->
+                        <div class="col-md-4 text-center p-4 bg-light d-flex justify-content-center align-items-center">
+                            <div class="profile-pic-wrapper">
+                                <form action="" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% if request.session.driver_profile %}
+                                        <img src="{{ request.session.driver_profile }}" class="profile-pic" alt="Profile Image">
+                                        {% else %}
+                                    <div class="initials">
+                                        {{ request.session.driver_short_name|default:"AD" }}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Right: Details -->
+                        <div class="col-md-8 p-4">
+                            <h5 class="mb-3">Your Details</h5>
+                            
+                            <table class="table table-borderless">
+                               
+                                <tr><th>Name:</th><td>{{ driver.first_name }} {{ driver.last_name }}</td></tr>
+                                <tr><th>Email:</th><td>{{ driver.company_email }}</td></tr>
+                                <tr><th>Phone:</th><td>{{ driver.phone_number }}</td></tr>
+                                <tr><th>Country:</th><td>{{ driver.country.name }}</td></tr>
+                                <tr><th>State:</th><td>{{ driver.state.name }}</td></tr>
+                                <tr><th>City:</th><td>{{ driver.city.name }}</td></tr>
+                                <tr><th>Joined At:</th><td>{{ driver.joined_at }}</td></tr>
+                                <tr><th>Driving Licence:</th><td>{{ driver.driving_licence }}</td></tr>
+                              
+                            </table>
+                            <!-- Edit Profile Button -->
+                            <div class="text-right mt-3 d-flex justify-content-start">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">
+                                    <i class="fas fa-edit"></i> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form method="POST" action="{% url 'driver_profile_update' %}">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="form-group col-md-6">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ request.session.driver_first_name }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ request.session.driver_last_name }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Phone</label>
+                            <input type="text" name="phone_number" class="form-control" value="{{ request.session.driver_phone_number }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Driving Licence</label>
+                            <input type="text" name="driving_licence" class="form-control" value="{{ request.session.driver_driving_licence }}">
+                        </div>
+                        <!-- You can add dropdowns for country, state, city if needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Modal -->
+
+</section>
+{% endblock content %}
+{% block scripts %}
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      toast: true,
+      positionclass: 'toast-top-end',
+      position: 'top-end',
+
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{{ message }}',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+{% endblock scripts %}

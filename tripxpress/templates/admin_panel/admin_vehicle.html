@@ -21,9 +21,9 @@
     <div class="container-fluid">
         <div class="mb-3 d-flex justify-content-end gap-2">
 
-            <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#modal-xl">
+            <!--<button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#modal-xl">
                 <i class="fas fa-plus"></i> Add Vehicle
-              </button>
+              </button>-->
               <button type="button" class="btn btn-danger d-none mr-3" id="deleteSelectedBtn" data-toggle="modal" data-target="#deleteSelectedModal">
                 <i class="fas fa-trash"></i> Delete Selected
               </button>
@@ -78,8 +78,8 @@
                                         </td>
                                         <td>
                                             <!-- Edit Button -->
-                                            <button type="button" class="btn btn-sm btn-outline-warning mr-2" data-toggle="modal" data-target="#editmodel{{ vehicle.vehicle_id }}">
-                                                <i class="fas fa-edit"></i>
+                                            <button type="button" class="btn btn-sm btn-outline-info mr-2" data-toggle="modal" data-target="#editmodel{{ vehicle.vehicle_id }}">
+                                                <i class="fas fa-eye"></i>
                                             </button>
                                             <!-- Delete Button -->
                                             <button type="button" class="btn btn-sm btn-outline-danger delete-vehicle" data-toggle="modal" data-target="#deleteModal{{ vehicle.vehicle_id }}">
@@ -101,7 +101,7 @@
 </section>
 <!--Create Vehicle Modal-->
 
-<div class="modal fade" id="modal-xl">
+<!--<div class="modal fade" id="modal-xl">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
@@ -206,124 +206,72 @@
     </div>
   </div>
 </div>  
-  
+  --!>
 <!--Edit Vehicle Modal-->
 {% for i in vehicles %}
 <div class="modal fade" id="editmodel{{ i.vehicle_id }}">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h4 class="modal-title">Edit Vehicle</h4>
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">Vehicle Details</h4>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
       <div class="modal-body">
-        <form method="POST" enctype="multipart/form-data" class="edit-vehicle-form" action="{% url 'admin_vehicle_edit' vehicle_id=i.vehicle_id %}">
-          {% csrf_token %}
 
-          <div class="row">
-            <div class="col-md-6 mb-3 form-group">
-              <label for="driverSelect{{ i.vehicle_id }}">Select Driver</label>
-              <select id="driverSelect{{ i.vehicle_id }}" name="driver" class="form-control" disabled>
-                <option value="">-- Select Driver --</option>
-                {% for driver in drivers %}
-                <option 
-                  value="{{ driver.driver_id }}"
-                  {% if driver.driver_id == i.driver.driver_id %}selected{% endif %}
-                  data-email="{{ driver.company_email }}"
-                  data-phone="{{ driver.phone_number }}"
-                  data-licence="{{ driver.driving_licence }}"
-                  data-type="{{ driver.vehicle_driver_type|join:', ' }}"
-                  data-ownership="{{ driver.vehicle_link }}"
-                  data-joined="{{ driver.joined_at|date:'Y-m-d' }}"
-                >
-                  {{ driver.first_name }} {{ driver.last_name }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
+        <table class="table table-bordered table-striped">
+          <tbody>
+            <tr>
+              <th>Vehicle Image</th>
+              <td>
+                {% if i.vehicle_image %}
+                  <img src="{{ i.vehicle_image.url }}" class="img-fluid rounded" style="max-height: 200px;" alt="Vehicle Image">
+                {% else %}
+                  <span class="text-muted">No image uploaded.</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr><th>Driver</th><td>{{ i.driver.first_name }} {{ i.driver.last_name }}</td></tr>
+            <tr><th>Vehicle Type</th><td>{{ i.vehicle_type|title }}</td></tr>
+            <tr><th>Vehicle Name</th><td>{{ i.vehicle_name }}</td></tr>
+            <tr><th>Model</th><td>{{ i.vehicle_model }}</td></tr>
+            <tr><th>Number</th><td>{{ i.vehicle_number }}</td></tr>
+            <tr><th>Color</th><td>{{ i.vehicle_color }}</td></tr>
+            <tr><th>Manufacture Year</th><td>{{ i.vehicle_year }}</td></tr>
+            <tr><th>Fuel Type</th><td>{{ i.vehicle_fuel }}</td></tr>
+            <tr><th>Mileage</th><td>{{ i.vehicle_mileage }}</td></tr>
+            <tr><th>Transmission</th><td>{{ i.vehicle_transmission }}</td></tr>
+            <tr><th>Engine</th><td>{{ i.vehicle_engine }}</td></tr>
 
-            <div class="col-md-6 mb-3 form-group">
-              
-                <label>Vehicle Type</label>
-                <select id="editVehicleType{{ i.vehicle_id }}" name="edit_vehicle_type" class="form-control" disabled>
-                  <option value="">-- Select Type --</option>
-                  <option value="car" {% if i.vehicle_type == 'car' %}selected{% endif %}>Car</option>
-                  <option value="bike" {% if i.vehicle_type == 'bike' %}selected{% endif %}>Bike</option>
-                  <option value="tempo" {% if i.vehicle_type == 'tempo' %}selected{% endif %}>Tempo</option>
-                </select>
-             
-              
-            </div>
-          </div>
+            {% if i.vehicle_type == 'car' %}
+              <tr><th>Seats</th><td>{{ i.vehicle_seats }}</td></tr>
+              <tr><th>Doors</th><td>{{ i.vehicle_doors }}</td></tr>
+              <tr><th>Airbags</th><td>{{ i.vehicle_airbags }}</td></tr>
+            {% elif i.vehicle_type == 'bike' %}
+              <tr><th>Brake Type</th><td>{{ i.vehicle_brake_type }}</td></tr>
+              <tr><th>Start Type</th><td>{{ i.vehicle_start_type }}</td></tr>
+              <tr><th>Weight</th><td>{{ i.vehicle_weight }} kg</td></tr>
+            {% elif i.vehicle_type == 'tempo' %}
+              <tr><th>Tempo Seats</th><td>{{ i.tempo_seats }}</td></tr>
+              <tr><th>Tempo Doors</th><td>{{ i.tempo_doors }}</td></tr>
+              <tr><th>Capacity</th><td>{{ i.vehicle_capacity }} kg</td></tr>
+            {% endif %}
 
-          <div id="driverDetails{{ i.vehicle_id }}" style="display: none;" class="mb-3">
-            <div class="row">
-              <div class="col-md-4 mb-3 form-group"><label>Email</label><input type="email" id="driverEmail{{ i.vehicle_id }}" class="form-control" readonly></div>
-              <div class="col-md-4 mb-3 form-group"><label>Phone</label><input type="text" id="driverPhone{{ i.vehicle_id }}" class="form-control" readonly></div>
-              <div class="col-md-4 mb-3 form-group"><label>Ownership</label><input type="text" id="driverowner{{ i.vehicle_id }}" class="form-control" readonly></div>
-              <div class="col-md-4 mb-3 form-group"><label>Driving Licence</label><input type="text" id="driverLicence{{ i.vehicle_id }}" class="form-control" readonly></div>
-              <div class="col-md-4 mb-3 form-group"><label>Licence Type</label><input type="text" id="driverType{{ i.vehicle_id }}" class="form-control" readonly></div>
-              <div class="col-md-4 mb-3 form-group"><label>Joined At</label><input type="text" id="driverjoined{{ i.vehicle_id }}" class="form-control" readonly></div>
-            </div>
-          </div>
+            <tr><th>Description</th><td>{{ i.vehicle_description }}</td></tr>
+            
+          </tbody>
+        </table>
 
-          <div class="row">
-            <div class="col-md-4 mb-3 form-group"><label>Vehicle Name</label><input type="text" name="edit_vehicle_name" value="{{ i.vehicle_name }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Vehicle Model</label><input type="text" name="edit_vehicle_model" value="{{ i.vehicle_model }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Vehicle Number</label><input type="text" name="edit_vehicle_number" value="{{ i.vehicle_number }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Color</label><input type="text" name="edit_vehicle_color" value="{{ i.vehicle_color }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Year</label><input type="number" name="edit_vehicle_year" value="{{ i.vehicle_year }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Fuel</label><input type="text" name="edit_vehicle_fuel" value="{{ i.vehicle_fuel }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Mileage</label><input type="number" name="edit_vehicle_mileage" value="{{ i.vehicle_mileage }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Transmission</label><input type="text" name="edit_vehicle_transmission" value="{{ i.vehicle_transmission }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Engine</label><input type="text" name="edit_vehicle_engine" value="{{ i.vehicle_engine }}" class="form-control"></div>
-          </div>
-
-          <!-- Conditional fields -->
-          <div class="row vehicle-fields car-fields" style="display: none;">
-            <div class="col-md-4 mb-3 form-group"><label>Seats</label><input type="number" name="edit_vehicle_seats" value="{{ i.vehicle_seats }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Doors</label><input type="number" name="edit_vehicle_doors" value="{{ i.vehicle_doors }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Airbags</label><input type="number" name="edit_vehicle_airbags" value="{{ i.vehicle_airbags }}" class="form-control"></div>
-          </div>
-
-          <div class="row vehicle-fields bike-fields" style="display: none;">
-            <div class="col-md-4 mb-3 form-group"><label>Brake Type</label><input type="text" name="edit_vehicle_brake_type" value="{{ i.vehicle_brake_type }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Start Type</label><input type="text" name="edit_vehicle_start_type" value="{{ i.vehicle_start_type }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Bike Weight (kg)</label><input type="text" name="edit_vehicle_weight" value="{{ i.vehicle_weight }}" class="form-control"></div>
-          </div>
-
-          <div class="row vehicle-fields tempo-fields" style="display: none;">
-            <div class="col-md-4 mb-3 form-group"><label>Seats</label><input type="number" name="edit_tempo_seats" value="{{ i.tempo_seats }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Doors</label><input type="number" name="edit_tempo_doors" value="{{ i.tempo_doors }}" class="form-control"></div>
-            <div class="col-md-4 mb-3 form-group"><label>Load Capacity (kg)</label><input type="text" name="edit_vehicle_capacity" value="{{ i.vehicle_capacity }}" class="form-control"></div>
-          </div>
-
-          <div class="col-md-12 mb-3 form-group">
-            <label>Vehicle Image</label>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="customFile{{ i.vehicle_id }}" name="edit_vehicle_image" accept="image/*">
-              <label class="custom-file-label" for="customFile{{ i.vehicle_id }}">Choose file</label>
-            </div>
-          </div>
-
-          <div class="col-md-12 mb-3 form-group">
-            <label>Description</label>
-            <textarea name="edit_vehicle_description" class="form-control" rows="3">{{ i.vehicle_description }}</textarea>
-          </div>
-
-          <div class="text-center mt-3">
-            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Update</button>
-          </div>
-        </form>
+        <div class="text-center mt-3">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        
       </div>
     </div>
   </div>
 </div>
-
 {% endfor %}
 
   <!-- Loop through drivers -->

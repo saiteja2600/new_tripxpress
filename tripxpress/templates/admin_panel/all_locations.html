@@ -1,0 +1,343 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">All Locations</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">All Locations</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <div class="container-fluid">
+
+    <!-- Button to open Add Modal -->
+    <div class="mb-3 text-right">
+      <button class="btn btn-primary" data-toggle="modal" data-target="#addLocationModal">
+        <i class="fas fa-plus"></i> Add Location
+      </button>
+    </div>
+
+    <!-- Locations Table -->
+    <div class="card shadow-sm">
+      <div class="card-body table-responsive">
+        <table class="table table-bordered table-hover text-center">
+          <thead class="thead-dark">
+            <tr>
+              <th>Name</th>
+              <th>Country</th>
+              <th>State</th>
+              <th>City</th>
+              <th>Pincode</th>
+              <th>Landmark</th>
+              <th>Created</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for loc in location %}
+            <tr>
+              <td>{{ loc.location_name }}</td>
+              <td>{{ loc.location_country.name }}</td>
+              <td>{{ loc.location_state.name }}</td>
+              <td>{{ loc.location_city.name }}</td>
+              <td>{{ loc.location_pincode }}</td>
+              <td>{{ loc.location_landmark }}</td>
+              <td>{{ loc.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#viewLocationModal{{ loc.location_id }}">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+
+           
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- View Modals for All Locations -->
+{% for loc in location %}
+<div class="modal fade" id="viewLocationModal{{ loc.location_id }}" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">{{ loc.location_name }}</h5>
+        <button class="close text-white" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <tr><th>Country</th><td>{{ loc.location_country.name }}</td></tr>
+          <tr><th>State</th><td>{{ loc.location_state.name }}</td></tr>
+          <tr><th>City</th><td>{{ loc.location_city.name }}</td></tr>
+          <tr><th>Address</th><td>{{ loc.location_address }}</td></tr>
+          <tr><th>Pincode</th><td>{{ loc.location_pincode }}</td></tr>
+          <tr><th>Landmark</th><td>{{ loc.location_landmark }}</td></tr>
+          <tr>
+            <th>URL</th>
+            <td style="max-width: 300px; word-wrap: break-word;">
+              <a href="{{ loc.location_url }}" target="_blank" style="display:inline-block; word-break: break-all;">
+                {{ loc.location_url }}
+              </a>
+            </td>
+          </tr>
+          
+          <tr><th>Image 1</th>
+            <td>
+              {% if loc.location_image1 %}
+                <img src="{{ loc.location_image1.url }}" class="img-fluid img-thumbnail" style="max-height: 250px;">
+              {% else %}
+                No image uploaded.
+              {% endif %}
+            </td>
+          </tr>
+          <tr><th>Image 2</th>
+            <td>
+              {% if loc.location_image2 %}
+                <img src="{{ loc.location_image2.url }}" class="img-fluid img-thumbnail" style="max-height: 250px;">
+              {% else %}
+                No image uploaded.
+              {% endif %}
+            </td>
+          </tr>
+          <tr><th>Image 3</th>
+            <td>
+              {% if loc.location_image3 %}
+                <img src="{{ loc.location_image3.url }}" class="img-fluid img-thumbnail" style="max-height: 250px;">
+              {% else %}
+                No image uploaded.
+              {% endif %}
+            </td>
+          </tr>
+          <tr><th>Image 4</th>
+            <td>
+              {% if loc.location_image4 %}
+                <img src="{{ loc.location_image4.url }}" class="img-fluid img-thumbnail" style="max-height: 250px;">
+              {% else %}
+                No image uploaded.
+              {% endif %}
+            </td>
+          </tr>
+          <tr><th>Created At</th><td>{{ loc.created_at|date:"Y-m-d H:i" }}</td></tr>
+        </table>
+        <div class="d-flex justify-content-center">
+          <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+<!-- Add Location Modal -->
+<div class="modal fade" id="addLocationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <form method="POST" enctype="multipart/form-data" id="addLocationForm">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Add Location</h5>
+          <button class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Location Name</label>
+              <input type="text" name="location_name" class="form-control" required>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Pincode</label>
+              <input type="text" name="location_pincode" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+              <label>Country</label>
+              <select name="location_country" class="form-control" id="country" required>
+                <option value="">Select Country</option>
+                {% for country in countries %}
+                <option value="{{ country.id }}">{{ country.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label>State</label>
+              <select name="location_state" class="form-control" id="state" required>
+                <option value="">Select State</option>
+                
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label>City</label>
+              <select name="location_city" class="form-control" id="city" required>
+                <option value="">Select City</option>
+              
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Landmark</label>
+              <input type="text" name="location_landmark" class="form-control">
+            </div>
+            <div class="form-group col-md-12">
+              <label>Address</label>
+              <textarea name="location_address" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="form-group col-md-12">
+              <label>Location URL (Google Maps)</label>
+              <input type="url" name="location_url" class="form-control">
+            </div>
+            <div class="form-group col-md-6">
+              <label>Loaction 1</label>
+              <div class="custom-file">
+                <input type="file" name="location_image1" class="custom-file-input" id="location_image1">
+                <label class="custom-file-label" for="location_image1">Choose file</label>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="">Location 2</label>
+                <div class="custom-file">
+                  <input type="file" name="location_image2" class="custom-file-input" id="location_image2">
+                  <label class="custom-file-label" for="location_image2">Choose file</label>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="">Location 3</label>
+                <div class="custom-file">
+                    <input type="file" name="location_image3" class="custom-file-input" id="location_image3">
+                    <label class="custom-file-label" for="location_image3">Choose file</label>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="">Location 4</label>
+                <div class="custom-file">
+                    <input type="file" name="location_image4" class="custom-file-input" id="location_image4">
+                    <label class="custom-file-label" for="location_image4">Choose file</label>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Location</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const loadStatesUrl = "{% url 'get_states' %}";
+    const loadCitiesUrl = "{% url 'get_cities' %}";
+    
+    $(document).ready(function () {
+      // Load states when a country is selected
+      $("#country").change(function () {
+        const countryId = $(this).val();
+        if (!countryId) {
+          $("#state").html('<option value="">Select State</option>');
+          $("#city").html('<option value="">Select City</option>');
+           return;
+        }
+  
+        $.ajax({
+          url: loadStatesUrl,
+          data: { country_id: countryId },
+          success: function (data) {
+            $("#state").html('<option value="">Select State</option>');
+            $("#city").html('<option value="">Select City</option>');
+            $("#branch").html('<option value="">Select Branch</option>');
+            data.forEach(function (state) {
+              $("#state").append('<option value="' + state.id + '">' + state.name + '</option>');
+            });
+          }
+        });
+      });
+  
+      // Load cities when a state is selected
+      $("#state").change(function () {
+        const stateId = $(this).val();
+        if (!stateId) {
+          $("#city").html('<option value="">Select City</option>');
+          $("#branch").html('<option value="">Select Branch</option>');
+          return;
+        }
+  
+        $.ajax({
+          url: loadCitiesUrl,
+          data: { state_id: stateId },
+          success: function (data) {
+            $("#city").html('<option value="">Select City</option>');
+            $("#branch").html('<option value="">Select Branch</option>');
+            data.forEach(function (city) {
+              $("#city").append('<option value="' + city.id + '">' + city.name + '</option>');
+            });
+          }
+        });
+      });
+  
+     
+    });
+  </script>
+
+<script>
+  $(document).ready(function () {
+   $('#addLocationForm').validate({
+      rules: {
+        location_name: { required: true },
+        location_pincode: { required: true },
+        location_country: { required: true },
+        location_state: { required: true },
+        location_city: { required: true },
+        location_landmark: { required: true },
+        location_address: { required: true },
+        location_url: { required: true, url: true },
+        location_image1: { required: true },
+        location_image2: { required: true },
+        location_image3: { required: true },
+        location_image4: { required: true },
+      },
+      messages: {
+        location_name: { required: "Please enter a location name" },
+        location_pincode: { required: "Please enter a pincode" },
+        location_country: { required: "Please select a country" },
+        location_state: { required: "Please select a state" },
+        location_city: { required: "Please select a city" },
+        location_landmark: { required: "Please enter a landmark" },
+        location_address: { required: "Please enter an address" },
+        location_url: { required: "Please enter a URL", url: "Please enter a valid URL" },
+        location_image1: { required: "Please upload an image" },
+        location_image2: { required: "Please upload an image" },
+        location_image3: { required: "Please upload an image" },
+        location_image4: { required: "Please upload an image" },
+
+      },
+      errorElement: 'span',
+      errorClass: 'text-danger',
+
+      highlight: function (element) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element) {
+        $(element).removeClass('is-invalid');
+      },
+
+   })
+  });
+</script>
+{% endblock scripts %}
